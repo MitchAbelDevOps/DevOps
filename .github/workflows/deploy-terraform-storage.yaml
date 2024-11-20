@@ -6,6 +6,8 @@ on:
 jobs:
   deploy-storage-account:
     runs-on: ubuntu-latest
+    environment:
+      name: dev
 
     permissions:
       id-token: write # Required for OIDC authentication
