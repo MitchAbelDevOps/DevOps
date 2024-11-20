@@ -31,9 +31,9 @@ jobs:
       uses: azure/cli@v1
       with:
         inlineScript: |
-          RESOURCE_GROUP="my-resource-group"
-          STORAGE_ACCOUNT_NAME="mystorageaccount$RANDOM" # Ensures globally unique name
-          LOCATION="eastus"
+          RESOURCE_GROUP="rg-integrationmanagement-aue"
+          STORAGE_ACCOUNT_NAME="saterrafromstateaue" # Ensures globally unique name
+          LOCATION="australiaeast"
           SKU="Standard_LRS"
 
           # Create the resource group if it doesn't exist
