@@ -14,11 +14,7 @@ jobs:
       contents: read  # To access repository files if needed
 
     steps:
-    # Step 1: Checkout the repository (optional if not needed)
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    # Step 2: Login to Azure using OIDC
+    # Step 1: Login to Azure using OIDC
     - name: Azure Login
       uses: azure/login@v1
       with:
@@ -26,13 +22,13 @@ jobs:
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-    # Step 3: Deploy the storage account using Azure CLI
+    # Step 2: Deploy the storage account using Azure CLI
     - name: Deploy Storage Account
       uses: azure/cli@v1
       with:
         inlineScript: |
           RESOURCE_GROUP="rg-integrationmanagement-aue"
-          STORAGE_ACCOUNT_NAME="saterrafromstateaue" # Ensures globally unique name
+          STORAGE_ACCOUNT_NAME="saterraformstateauedev" # Ensures globally unique name
           LOCATION="australiaeast"
           SKU="Standard_LRS"
 
