@@ -67,7 +67,7 @@ jobs:
   # Call resusable workflow terraform-init.yaml
   init:
     needs: setup
-    uses: MitchAbelDevOps/DevOps/.github/workflows/terraform-init.yml@main
+    uses: MitchAbelDevOps/DevOps/.github/workflows/terraform-init.yaml@main
     with:
       environment: ${{ inputs.environment }}
       backend_config_storage_account_name: "saterraformstateaue${{ inputs.environment }}"
@@ -79,7 +79,7 @@ jobs:
   # Call resusable workflow terraform-plan.yaml
   plan:
     needs: init
-    uses: MitchAbelDevOps/DevOps/.github/workflows/terraform-plan.yml@main
+    uses: MitchAbelDevOps/DevOps/.github/workflows/terraform-plan.yaml@main
     with:
       environment: ${{ inputs.environment }}
     secrets:
@@ -88,7 +88,7 @@ jobs:
   # Call resusable workflow terraform-apply.yaml
   apply:
     needs: plan
-    uses: MitchAbelDevOps/DevOps/.github/workflows/terraform-apply.yml@main
+    uses: MitchAbelDevOps/DevOps/.github/workflows/terraform-apply.yaml@main
     with:
       environment: ${{ inputs.environment }}
     secrets:
