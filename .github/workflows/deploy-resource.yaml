@@ -74,7 +74,7 @@ jobs:
       state_filename: ${{ inputs.backend_config_key }}
       working_directory: ${{ inputs.root_directory }}
     secrets:
-      TF_STORAGE_ACCOUNT_KEY: ${{ secrets.TF_STORAGE_ACCOUNT_KEY }}
+      TF_STORAGE_ACCOUNT_KEY: ${{ env.TF_STORAGE_ACCOUNT_KEY }}
 
   # Call resusable workflow terraform-plan.yaml
   plan:
@@ -84,7 +84,7 @@ jobs:
       working_directory: ${{ inputs.root_directory }}
       var_file: ${{ inputs.environment }}.tfvars
     secrets:
-      TF_STORAGE_ACCOUNT_KEY: ${{ secrets.TF_STORAGE_ACCOUNT_KEY }}
+      TF_STORAGE_ACCOUNT_KEY: ${{ env.TF_STORAGE_ACCOUNT_KEY }}
 
   # Call resusable workflow terraform-apply.yaml
   apply:
@@ -93,7 +93,7 @@ jobs:
     with:
       working_directory: ${{ inputs.root_directory }}
     secrets:
-      TF_STORAGE_ACCOUNT_KEY: ${{ secrets.TF_STORAGE_ACCOUNT_KEY }}
+      TF_STORAGE_ACCOUNT_KEY: ${{ env.TF_STORAGE_ACCOUNT_KEY }}
 
   # Clean up temp files we moved in the setup job
   # TODO: Make the file refs input vars
