@@ -12,9 +12,6 @@ on:
       state_filename:
         required: true
         type: string
-      access_key:
-        required: true
-        type: string
       working_directory:
         required: true
         type: string
