@@ -39,11 +39,11 @@ jobs:
       # Copy Specific Files to Root Directory
       - name: Prepare Terraform Files
         run: |
-          cp ${{ inputs.sub_directory }}/main.tf ${inputs.root_directory}/
-          cp ${{ inputs.sub_directory }}/variables.tf ${inputs.root_directory}/
+          cp ${{ inputs.sub_directory }}/main.tf ${{ inputs.root_directory }}/
+          cp ${{ inputs.sub_directory }}/variables.tf ${{ inputs.root_directory }}/
           
           # Dynamically select the correct .tfvars file using interpolation
-          cp ${{ inputs.sub_directory }}/Variables/${{ inputs.environment }}.tfvars ${inputs.root_directory}/${{ inputs.environment }}.tfvars
+          cp ${{ inputs.sub_directory }}/Variables/${{ inputs.environment }}.tfvars ${{ inputs.root_directory }}/${{ inputs.environment }}.tfvars
 
       # Log in with OIDC
       - name: Azure Login
@@ -85,6 +85,6 @@ jobs:
     steps:
       - name: Cleanup Temporary Files
         run: |
-          rm -f ${inputs.root_directory}/${{ inputs.sub_directory }}/main.tf
-          rm -f ${inputs.root_directory}/${{ inputs.sub_directory }}/variables.tf
-          rm -f ${inputs.root_directory}/${{ inputs.sub_directory }}/Variables/${{ inputs.environment }}.tfvars
+          rm -f ${{ inputs.root_directory }}/${{ inputs.sub_directory }}/main.tf
+          rm -f ${{ inputs.root_directory }}/${{ inputs.sub_directory }}/variables.tf
+          rm -f ${{ inputs.root_directory }}/${{ inputs.sub_directory }}/Variables/${{ inputs.environment }}.tfvars
