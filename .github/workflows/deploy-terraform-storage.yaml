@@ -28,9 +28,10 @@ jobs:
       with:
         inlineScript: |
           RESOURCE_GROUP="rg-integrationmanagement-aue"
-          STORAGE_ACCOUNT_NAME="saterraformstateauedev" # Ensures globally unique name
+          STORAGE_ACCOUNT_NAME="saterraformstateauedev"
           LOCATION="australiaeast"
           SKU="Standard_LRS"
+          CONTAINER_NAME="terraform-state"
 
           # Create the resource group if it doesn't exist
           az group create --name $RESOURCE_GROUP --location $LOCATION
