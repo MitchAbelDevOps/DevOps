@@ -1,0 +1,25 @@
+name: 'Terraform Apply'
+
+on:
+  workflow_call:
+    inputs:
+      working_directory:
+        description: 'Directory containing Terraform files'
+        required: true
+        type: string
+      plan_file:
+        description: 'Terraform plan file'
+        required: true
+        type: string
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Terraform Apply
+      run: |
+        terraform apply -input=false ${{ inputs.plan_file }}
+      working-directory: ${{ inputs.working_directory }}
