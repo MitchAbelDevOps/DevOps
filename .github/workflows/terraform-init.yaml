@@ -1,4 +1,4 @@
-name: Terraform Init Workflow
+name: Terraform Init
 
 on:
   workflow_call:
