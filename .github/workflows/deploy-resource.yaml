@@ -73,7 +73,7 @@ jobs:
       container_name: terraform-state
       state_filename: ${{ inputs.backend_config_key }}
       working_directory: ${{ inputs.root_directory }}
-      storage_account_key: ${{ env.TF_STORAGE_ACCOUNT_KEY }}
+      storage_account_key: ${{ secrets.TF_STORAGE_ACCOUNT_KEY }}
 
   # Call resusable workflow terraform-plan.yaml
   plan:
