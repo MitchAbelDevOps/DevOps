@@ -53,16 +53,6 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      
-      # Retrieve Storage account key
-      # TODO: Change to MSI?
-      - name: Get Terraform Storage Account Key
-        id: get-key
-        uses: azure/cli@v2
-        with:
-          inlineScript: |
-            key=$(az storage account keys list -g "rg-integrationmanagement-aue" -n "saterraformstateaue${{ inputs.environment }}" --query [0].value -o tsv)
-            echo "TF_STORAGE_ACCOUNT_KEY=$key" >> $GITHUB_ENV
 
   # Call resusable workflow terraform-init.yaml
   init:
@@ -73,7 +63,6 @@ jobs:
       container_name: terraform-state
       state_filename: ${{ inputs.backend_config_key }}
       working_directory: ${{ inputs.root_directory }}
-      storage_account_key: ${{ secrets.TF_STORAGE_ACCOUNT_KEY }}
 
   # Call resusable workflow terraform-plan.yaml
   plan:

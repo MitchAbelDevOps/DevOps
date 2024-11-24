@@ -15,10 +15,6 @@ on:
       working_directory:
         required: true
         type: string
-      storage_account_key:
-        description: 'Terraform Storage Account Key'
-        required: true
-        type: string
 
 jobs:
   init:
@@ -35,6 +31,16 @@ jobs:
       with:
         terraform_version: '1.5.0'
 
+    # Retrieve Storage account key
+    # TODO: Change to MSI?
+    - name: Get Terraform Storage Account Key
+      id: get-key
+      uses: azure/cli@v2
+      with:
+        inlineScript: |
+          key=$(az storage account keys list -g "rg-integrationmanagement-aue" -n "saterraformstateaue${{ inputs.environment }}" --query [0].value -o tsv)
+          echo "TF_STORAGE_ACCOUNT_KEY=$key" >> $GITHUB_ENV
+
     # Terraform Init
     - name: Terraform Init
       run: |
@@ -42,7 +48,7 @@ jobs:
           -backend-config="storage_account_name=${{ inputs.storage_account_name }}" \
           -backend-config="container_name=${{ inputs.container_name }}" \
           -backend-config="key=${{ inputs.state_filename }}" \
-          -backend-config="access_key=${{ inputs.storage_account_key }}"
+          -backend-config="access_key=${TF_STORAGE_ACCOUNT_KEY}"
       working-directory: ${{ inputs.working_directory }}
 
     # Terraform Format
