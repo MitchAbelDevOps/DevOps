@@ -20,7 +20,7 @@ on:
         type: string
 
 jobs:
-  terraform:
+  init:
     runs-on: ubuntu-latest
 
     steps:
