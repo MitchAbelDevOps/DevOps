@@ -70,9 +70,10 @@ jobs:
     uses: MitchAbelDevOps/DevOps/.github/workflows/terraform-init.yaml@main
     with:
       environment: ${{ inputs.environment }}
-      backend_config_storage_account_name: "saterraformstateaue${{ inputs.environment }}"
-      backend_config_container_name: terraform-state
-      backend_config_key: ${{ inputs.backend_config_key }}
+      storage_account_name: "saterraformstateaue${{ inputs.environment }}"
+      container_name: terraform-state
+      state_filename: ${{ inputs.backend_config_key }}
+      working_directory: ${{ inputs.root_directory }}
     secrets:
       TF_STORAGE_ACCOUNT_KEY: ${{ secrets.TF_STORAGE_ACCOUNT_KEY }}
 
@@ -81,7 +82,8 @@ jobs:
     needs: init
     uses: MitchAbelDevOps/DevOps/.github/workflows/terraform-plan.yaml@main
     with:
-      environment: ${{ inputs.environment }}
+      working_directory: ${{ inputs.root_directory }}
+      var_file: ${{ inputs.environment }}.tfvars
     secrets:
       TF_STORAGE_ACCOUNT_KEY: ${{ secrets.TF_STORAGE_ACCOUNT_KEY }}
 
@@ -90,7 +92,7 @@ jobs:
     needs: plan
     uses: MitchAbelDevOps/DevOps/.github/workflows/terraform-apply.yaml@main
     with:
-      environment: ${{ inputs.environment }}
+      working_directory: ${{ inputs.root_directory }}
     secrets:
       TF_STORAGE_ACCOUNT_KEY: ${{ secrets.TF_STORAGE_ACCOUNT_KEY }}
 

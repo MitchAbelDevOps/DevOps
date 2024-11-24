@@ -7,10 +7,6 @@ on:
         description: 'Directory containing Terraform files'
         required: true
         type: string
-      plan_file:
-        description: 'Terraform plan file'
-        required: true
-        type: string
 
 jobs:
   apply:
@@ -21,5 +17,5 @@ jobs:
 
     - name: Terraform Apply
       run: |
-        terraform apply -input=false ${{ inputs.plan_file }}
+        terraform apply -input=false deployment.tfplan
       working-directory: ${{ inputs.working_directory }}
