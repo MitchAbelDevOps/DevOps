@@ -78,7 +78,7 @@ jobs:
 
   # Call resusable workflow terraform-plan.yaml
   plan:
-    needs: init
+    needs: [setup, init]
     uses: MitchAbelDevOps/DevOps/.github/workflows/terraform-plan.yaml@main
     with:
       working_directory: ${{ inputs.root_directory }}
@@ -88,7 +88,7 @@ jobs:
 
   # Call resusable workflow terraform-apply.yaml
   apply:
-    needs: plan
+    needs: [setup, init, plan]
     uses: MitchAbelDevOps/DevOps/.github/workflows/terraform-apply.yaml@main
     with:
       working_directory: ${{ inputs.root_directory }}
