@@ -42,3 +42,15 @@ jobs:
             --location $LOCATION \
             --sku $SKU \
             --kind StorageV2
+
+          # Retrieve the storage account key
+          ACCOUNT_KEY=$(az storage account keys list \
+            --resource-group $RESOURCE_GROUP \
+            --account-name $STORAGE_ACCOUNT_NAME \
+            --query "[0].value" -o tsv)
+
+          # Create the blob container
+          az storage container create \
+            --name $CONTAINER_NAME \
+            --account-name $STORAGE_ACCOUNT_NAME \
+            --account-key $ACCOUNT_KEY
