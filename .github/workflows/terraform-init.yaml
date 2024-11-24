@@ -1,0 +1,53 @@
+name: Terraform Init Workflow
+
+on:
+  workflow_call:
+    inputs:
+      terraform_version:
+        required: true
+        type: string
+      storage_account_name:
+        required: true
+        type: string
+      container_name:
+        required: true
+        type: string
+      key:
+        required: true
+        type: string
+      access_key:
+        required: true
+        type: string
+      working_directory:
+        required: true
+        type: string
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout the repository
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    # Install Terraform
+    - name: Install Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: ${{ inputs.terraform_version }}
+
+    # Terraform Init
+    - name: Terraform Init
+      run: |
+        terraform init \
+          -backend-config="storage_account_name=${{ inputs.storage_account_name }}" \
+          -backend-config="container_name=${{ inputs.container_name }}" \
+          -backend-config="key=${{ inputs.key }}" \
+          -backend-config="access_key=${{ inputs.access_key }}"
+      working-directory: ${{ inputs.working_directory }}
+
+    # Terraform Format
+    - name: Terraform Format
+      run: terraform fmt -check
+      working-directory: ${{ inputs.working_directory }}
