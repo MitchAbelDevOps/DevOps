@@ -37,14 +37,13 @@ jobs:
           echo "TF_VAR_environment=${{ inputs.environment }}" >> $GITHUB_ENV
 
       # Copy Specific Files to Root Directory
-      # TODO: Make the file refs input vars
       - name: Prepare Terraform Files
         run: |
-          cp ${inputs.root_directory}/${{ inputs.sub_directory }}/main.tf ${inputs.root_directory}/
-          cp ${inputs.root_directory}/${{ inputs.sub_directory }}/variables.tf ${inputs.root_directory}/
+          cp ${{ inputs.sub_directory }}/main.tf ${inputs.root_directory}/
+          cp ${{ inputs.sub_directory }}/variables.tf ${inputs.root_directory}/
           
           # Dynamically select the correct .tfvars file using interpolation
-          cp ${inputs.root_directory}/${{ inputs.sub_directory }}/Variables/${{ inputs.environment }}.tfvars ${inputs.root_directory}/${{ inputs.environment }}.tfvars
+          cp ${{ inputs.sub_directory }}/Variables/${{ inputs.environment }}.tfvars ${inputs.root_directory}/${{ inputs.environment }}.tfvars
 
       # Log in with OIDC
       - name: Azure Login
@@ -80,7 +79,6 @@ jobs:
       working_directory: ${{ inputs.root_directory }}
 
   # Clean up temp files we moved in the setup job
-  # TODO: Make the file refs input vars
   cleanup:
     needs: apply
     runs-on: ubuntu-latest
