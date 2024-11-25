@@ -3,6 +3,10 @@ name: Terraform Init
 on:
   workflow_call:
     inputs:
+      environment:
+        description: 'Deployment Environment'
+        required: true
+        type: string
       storage_account_name:
         required: true
         type: string
@@ -19,6 +23,7 @@ on:
 jobs:
   init:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
 
     steps:
     # Checkout the repository

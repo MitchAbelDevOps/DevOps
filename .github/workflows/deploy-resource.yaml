@@ -50,6 +50,7 @@ jobs:
     needs: setup
     uses: MitchAbelDevOps/DevOps/.github/workflows/terraform-init.yaml@main
     with:
+      environment: 'dev'
       storage_account_name: "saterraformstateaue${{ inputs.environment }}"
       container_name: terraform-state
       state_filename: ${{ inputs.backend_config_key }}
