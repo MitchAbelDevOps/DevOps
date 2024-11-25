@@ -40,8 +40,8 @@ jobs:
       # Copy Resource Specific Files to Root Directory
       - name: Prepare Terraform Files
         run: |
-          cp ${{ inputs.sub_directory }}/main.tf ${{ inputs.root_directory }}/
-          cp ${{ inputs.sub_directory }}/variables.tf ${{ inputs.root_directory }}/
+          # Move all .tf files from the subdirectory to the root directory
+          find ${{ inputs.sub_directory }} -maxdepth 1 -name '*.tf' -exec mv {} ${{ inputs.root_directory }}/ \;
           
           # Dynamically select the correct .tfvars file using interpolation
           cp ${{ inputs.sub_directory }}/Variables/${{ inputs.environment }}.tfvars ${{ inputs.root_directory }}/${{ inputs.environment }}.tfvars
