@@ -53,7 +53,7 @@ jobs:
       environment: 'dev'
       storage_account_name: "saterraformstateaue${{ inputs.environment }}"
       container_name: terraform-state
-      state_filename: ${{ inputs.backend_config_key }}
+      state_filename: ${{ inputs.terraform_state_filename }}
       working_directory: ${{ inputs.root_directory }}
     secrets: inherit
 
