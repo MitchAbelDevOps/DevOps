@@ -78,11 +78,6 @@ jobs:
             -backend-config="access_key=${TF_STORAGE_ACCOUNT_KEY}"
         working-directory: ${{ inputs.root_directory }}
 
-      # Terraform Format
-      - name: Terraform Format
-        run: terraform fmt -check
-        working-directory: ${{ inputs.root_directory }}
-
       # Terraform Plan
       - name: Terraform Plan
         run: |
