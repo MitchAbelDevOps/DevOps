@@ -93,3 +93,5 @@ jobs:
         run: |
           terraform apply -input=false deployment.tfplan
         working-directory: ${{ inputs.root_directory }}
+
+      # May need to do dynamic file cleanup based on what we moved to root?
