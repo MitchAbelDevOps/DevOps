@@ -45,6 +45,12 @@ jobs:
           # Dynamically select the correct .tfvars file using interpolation
           cp ${{ inputs.sub_directory }}/Variables/${{ inputs.environment }}.tfvars ${{ inputs.root_directory }}/${{ inputs.environment }}.tfvars
 
+      - name: Debug Azure Login Secrets
+        run: |
+          echo "Client ID: ${{ secrets.AZURE_CLIENT_ID }}"
+          echo "Tenant ID: ${{ secrets.AZURE_TENANT_ID }}"
+          echo "Subscription ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+
       # Log in with OIDC
       - name: Azure Login
         uses: azure/login@v1
