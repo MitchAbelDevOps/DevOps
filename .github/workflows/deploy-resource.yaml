@@ -44,7 +44,7 @@ jobs:
           cp ${{ inputs.sub_directory }}/variables.tf ${{ inputs.root_directory }}/
           
           # Dynamically select the correct .tfvars file using interpolation
-          cp ${{ inputs.sub_directory }}/Variables/${{ inputs.environment }}.tfvars ${{ inputs.root_directory }}/${{ inputs.environment }}.tfvars
+          cp ${{ inputs.root_directory }}/Variables/${{ inputs.environment }}.tfvars ${{ inputs.root_directory }}/${{ inputs.environment }}.tfvars
 
       # Install Terraform
       - name: Install Terraform
