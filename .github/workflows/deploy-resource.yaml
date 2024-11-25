@@ -37,7 +37,7 @@ jobs:
           echo "TF_VAR_resourceSuffix=tewheke" >> $GITHUB_ENV
           echo "TF_VAR_environment=${{ inputs.environment }}" >> $GITHUB_ENV
 
-      # Copy Specific Files to Root Directory
+      # Copy Resource Specific Files to Root Directory
       - name: Prepare Terraform Files
         run: |
           cp ${{ inputs.sub_directory }}/main.tf ${{ inputs.root_directory }}/
@@ -46,12 +46,13 @@ jobs:
           # Dynamically select the correct .tfvars file using interpolation
           cp ${{ inputs.sub_directory }}/Variables/${{ inputs.environment }}.tfvars ${{ inputs.root_directory }}/${{ inputs.environment }}.tfvars
 
+      # Install Terraform
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: '1.5.0'
 
-      # Log in with OIDC
+      # Log in to Azure with OIDC
       - name: Azure Login
         uses: azure/login@v1
         with:
@@ -59,7 +60,7 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      # Retrieve Storage account key
+      # Retrieve Terraform State Storage Account key
       - name: Get Terraform Storage Account Key
         id: get-key
         uses: azure/cli@v2
@@ -68,7 +69,7 @@ jobs:
             key=$(az storage account keys list -g "rg-integrationmanagement-aue" -n "saterraformstateaue${{ inputs.environment }}" --query [0].value -o tsv)
             echo "TF_STORAGE_ACCOUNT_KEY=$key" >> $GITHUB_ENV
 
-      # Terraform Init
+      # Terraform Init with Terraform State Storage Account details
       - name: Terraform Init
         run: |
           terraform init \
@@ -78,7 +79,7 @@ jobs:
             -backend-config="access_key=${TF_STORAGE_ACCOUNT_KEY}"
         working-directory: ${{ inputs.root_directory }}
 
-      # Terraform Plan
+      # Terraform Plan with environment specific tfvars file
       - name: Terraform Plan
         run: |
           terraform plan \
@@ -92,41 +93,3 @@ jobs:
         run: |
           terraform apply -input=false deployment.tfplan
         working-directory: ${{ inputs.root_directory }}
-
-  # # Call resusable workflow terraform-init.yaml
-  # init:
-  #   needs: setup
-  #   uses: MitchAbelDevOps/DevOps/.github/workflows/terraform-init.yaml@main
-  #   with:
-  #     environment: 'dev'
-  #     storage_account_name: "saterraformstateaue${{ inputs.environment }}"
-  #     container_name: terraform-state
-  #     state_filename: ${{ inputs.terraform_state_filename }}
-  #     working_directory: ${{ inputs.root_directory }}
-  #   secrets: inherit
-
-  # # Call resusable workflow terraform-plan.yaml
-  # plan:
-  #   needs: [setup, init]
-  #   uses: MitchAbelDevOps/DevOps/.github/workflows/terraform-plan.yaml@main
-  #   with:
-  #     working_directory: ${{ inputs.root_directory }}
-  #     var_file: ${{ inputs.environment }}.tfvars
-
-  # # Call resusable workflow terraform-apply.yaml
-  # apply:
-  #   needs: [setup, init, plan]
-  #   uses: MitchAbelDevOps/DevOps/.github/workflows/terraform-apply.yaml@main
-  #   with:
-  #     working_directory: ${{ inputs.root_directory }}
-
-  # # Clean up temp files we moved in the setup job
-  # cleanup:
-  #   needs: apply
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Cleanup Temporary Files
-  #       run: |
-  #         rm -f ${{ inputs.root_directory }}/${{ inputs.sub_directory }}/main.tf
-  #         rm -f ${{ inputs.root_directory }}/${{ inputs.sub_directory }}/variables.tf
-  #         rm -f ${{ inputs.root_directory }}/${{ inputs.sub_directory }}/Variables/${{ inputs.environment }}.tfvars
