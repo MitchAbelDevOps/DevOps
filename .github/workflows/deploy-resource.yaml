@@ -83,7 +83,7 @@ jobs:
         run: |
           terraform plan \
             -input=false \
-            -var-file="${{ inputs.var_file }}" \
+            -var-file="${{ inputs.environment }}.tfvars" \
             -out=deployment.tfplan
         working-directory: ${{ inputs.root_directory }}
 
