@@ -19,6 +19,13 @@ on:
         description: 'Name for the tfstate blob to create for this resource'
         required: true
         type: string
+    secrets:
+      AZURE_CLIENT_ID:
+        required: true
+      AZURE_TENANT_ID:
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
 
 jobs:
   setup:
