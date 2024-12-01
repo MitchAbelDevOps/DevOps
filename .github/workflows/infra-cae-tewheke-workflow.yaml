@@ -20,7 +20,7 @@ on:
       terraform_state_filename:
         description: "Name for the tfstate blob to create for this resource"
         required: false
-        default: "kv-tewheke.tfstate"
+        default: "cae-tewheke.tfstate"
         type: string
   workflow_dispatch:
     inputs:
@@ -41,7 +41,7 @@ on:
       terraform_state_filename:
         description: "Name for the tfstate blob to create for this resource"
         required: false
-        default: "kv-tewheke.tfstate"
+        default: "cae-tewheke.tfstate"
         type: string
 
 jobs:
