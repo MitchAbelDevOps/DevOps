@@ -1,10 +1,10 @@
-name: Deploy Runner Image
+name: Setup GitHub Runner
 
 on:
   workflow_dispatch: # Trigger manually via GitHub Actions interface
 
 jobs:
-  deploy-storage-account:
+  Setup GitHub Runner:
     runs-on: ubuntu-latest
     environment:
       name: dev
@@ -27,7 +27,7 @@ jobs:
       uses: azure/cli@v1
       with:
         inlineScript: |
-          CONTAINER_IMAGE_NAME="actions-runner:latest"
+          CONTAINER_IMAGE_NAME="actions-runner:2.321.0"
           CONTAINER_REGISTRY_NAME="acrtewhekedevaue"
 
           # Create the image in the ACR
