@@ -25,7 +25,7 @@ resource "azurerm_container_registry" "container_registry" {
   name                = "acr${var.resourceSuffix}${var.environment}${var.locationSuffix}"
   location            = var.location
   resource_group_name = local.fullResourceGroupName
-  sku = "Basic"
+  sku                 = "Basic"
 }
 
 // Container App Environment
@@ -38,9 +38,7 @@ resource "azurerm_container_app_environment" "container_app_environment" {
   workload_profile {
     name                  = "Consumption"
     workload_profile_type = "Consumption"
-    maximum_count         = 0
-    minimum_count         = 0
   }
-  infrastructure_subnet_id = data.azurerm_subnet.runners_subnet.id
+  infrastructure_subnet_id           = data.azurerm_subnet.runners_subnet.id
   infrastructure_resource_group_name = "rg-caeinfra-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
 }
