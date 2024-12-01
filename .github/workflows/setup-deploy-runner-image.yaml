@@ -1,4 +1,4 @@
-name: Deploy Terraform Storage Account
+name: Deploy Runner Image
 
 on:
   workflow_dispatch: # Trigger manually via GitHub Actions interface
