@@ -22,7 +22,7 @@ New Resources
 ***************************************************/
 // Container Registry
 resource "azurerm_container_registry" "container_registry" {
-  name                = "acr-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
+  name                = "acr${var.resourceSuffix}${var.environment}${var.locationSuffix}"
   location            = var.location
   resource_group_name = local.fullResourceGroupName
   sku = "Basic"
