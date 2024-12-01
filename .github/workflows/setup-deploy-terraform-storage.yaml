@@ -4,7 +4,7 @@ on:
   workflow_dispatch: # Trigger manually via GitHub Actions interface
 
 jobs:
-  Setup Terraform Storage Account:
+  setup-terraform-storage-account:
     runs-on: ubuntu-latest
     environment:
       name: dev

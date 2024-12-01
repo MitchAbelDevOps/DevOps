@@ -4,7 +4,7 @@ on:
   workflow_dispatch: # Trigger manually via GitHub Actions interface
 
 jobs:
-  Setup GitHub Runner:
+  setup-gitHub-runner:
     runs-on: ubuntu-latest
     environment:
       name: dev
