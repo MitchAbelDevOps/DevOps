@@ -3,8 +3,20 @@ name: Setup GitHub Runner
 on:
   workflow_dispatch: # Trigger manually via GitHub Actions interface
 
+env:
+  JOB_NAME: "MoJ-Runner"
+  RESOURCE_GROUP: "rg-shared-tewheke-dev-aue"
+  ENVIRONMENT: "cae-tewheke-dev-aue"
+  CONTAINER_REGISTRY_NAME: "acrtewhekedevaue"
+  CONTAINER_IMAGE_NAME: "actions-runner:2.321.0"
+  REPO_OWNER: "your-repo-owner"
+  REPO_NAME: "your-repo-name"
+  GITHUB_PAT: ${{ secrets.GITHUB_PAT }}  # GitHub Personal Access Token stored in secrets
+  REGISTRATION_TOKEN_API_URL: "https://api.github.com/repos/${{ env.REPO_OWNER }}/${{ env.REPO_NAME }}/actions/runners/registration-token"
+  GH_URL: "https://github.com/${{ env.REPO_OWNER }}/${{ env.REPO_NAME }}"
+
 jobs:
-  setup-gitHub-runner:
+  get-runner-image:
     runs-on: ubuntu-latest
     environment:
       name: dev
@@ -14,7 +26,6 @@ jobs:
       contents: read  # To access repository files if needed
 
     steps:
-    # Step 1: Login to Azure using OIDC
     - name: Azure Login
       uses: azure/login@v1
       with:
@@ -24,7 +35,7 @@ jobs:
 
     - name: Log in to Azure Container Registry
       run: |
-        az acr login --name acrtewhekedevaue
+        az acr login --name $CONTAINER_REGISTRY_NAME
 
     - name: Pull Docker image from GitHub Container Registry
       run: |
@@ -32,8 +43,47 @@ jobs:
 
     - name: Tag the Docker image for ACR
       run: |
-        docker tag ghcr.io/actions/actions-runner:2.321.0 acrtewhekedevaue.azurecr.io/actions-runner:2.321.0
-
+        docker tag ghcr.io/actions/actions-runner:2.321.0 $CONTAINER_REGISTRY_NAME.azurecr.io/$CONTAINER_IMAGE_NAME
+    
     - name: Push Docker image to ACR
       run: |
-        docker push acrtewhekedevaue.azurecr.io/actions-runner:2.321.0
+        docker push $CONTAINER_REGISTRY_NAME.azurecr.io/$CONTAINER_IMAGE_NAME
+  
+  create-containerapp-job:
+    runs-on: ubuntu-latest
+    needs: get-runner-image
+
+    steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Create Azure Container App Job
+        run: |
+          az containerapp job create -n "$JOB_NAME" \
+            -g "$RESOURCE_GROUP" \
+            --environment "$ENVIRONMENT" \
+            --trigger-type Event \
+            --replica-timeout 1800 \
+            --replica-retry-limit 0 \
+            --replica-completion-count 1 \
+            --parallelism 1 \
+            --image "$CONTAINER_REGISTRY_NAME.azurecr.io/$CONTAINER_IMAGE_NAME" \
+            --min-executions 0 \
+            --max-executions 10 \
+            --polling-interval 30 \
+            --scale-rule-name "github-runner" \
+            --scale-rule-type "github-runner" \
+            --scale-rule-metadata "githubAPIURL=https://api.github.com" \
+            "owner=$REPO_OWNER" "runnerScope=repo" "repos=$REPO_NAME" "targetWorkflowQueueLength=1" \
+            --scale-rule-auth "personalAccessToken=personal-access-token" \
+            --cpu "2.0" \
+            --memory "4Gi" \
+            --secrets "personal-access-token=$GITHUB_PAT" \
+            --env-vars "GITHUB_PAT=secretref:personal-access-token" \
+            "GH_URL=$GH_URL" \
+            "REGISTRATION_TOKEN_API_URL=$REGISTRATION_TOKEN_API_URL" \
+            --registry-server "$CONTAINER_REGISTRY_NAME.azurecr.io"
