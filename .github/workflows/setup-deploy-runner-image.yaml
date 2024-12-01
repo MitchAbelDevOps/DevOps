@@ -1,0 +1,38 @@
+name: Deploy Terraform Storage Account
+
+on:
+  workflow_dispatch: # Trigger manually via GitHub Actions interface
+
+jobs:
+  deploy-storage-account:
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+
+    permissions:
+      id-token: write # Required for OIDC authentication
+      contents: read  # To access repository files if needed
+
+    steps:
+    # Step 1: Login to Azure using OIDC
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    # Step 2: Deploy the storage account using Azure CLI
+    - name: Deploy Storage Account
+      uses: azure/cli@v1
+      with:
+        inlineScript: |
+          CONTAINER_IMAGE_NAME="github-actions-runner:1.0"
+          CONTAINER_REGISTRY_NAME="acrtewhekedevaue"
+
+          # Create the image in the ACR
+          az acr build \
+            --registry "$CONTAINER_REGISTRY_NAME" \
+            --image "$CONTAINER_IMAGE_NAME" \
+            --file "Dockerfile.github" \
+            "https://github.com/Azure-Samples/container-apps-ci-cd-runner-tutorial.git"
