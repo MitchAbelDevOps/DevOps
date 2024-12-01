@@ -22,21 +22,18 @@ jobs:
         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-    # Step 2: Build the GitHub image into ACR
-    - name: Build GitHub Runner Docker Image
-      uses: azure/cli@v1
-      with:
-        inlineScript: |
-          CONTAINER_IMAGE_NAME="actions-runner:2.321.0"
-          CONTAINER_REGISTRY_NAME="acrtewhekedevaue"
+    - name: Log in to Azure Container Registry
+      run: |
+        az acr login --name acrtewhekedevaue
 
-          # Create the image in the ACR
-          # az acr build \
-          #   --registry "$CONTAINER_REGISTRY_NAME" \
-          #   --image "$CONTAINER_IMAGE_NAME" \
-          #   --file images/Dockerfile \
-          #   "https://github.com/actions/runner.git"
-            
-          docker pull ghcr.io/actions/actions-runner:2.321.0
-          docker tag ghcr.io/actions/actions-runner:2.321.0 acrtewhekedevaue.azurecr.io/actions-runner:2.321.0
-          docker push acrtewhekedevaue.azurecr.io/actions-runner:2.321.0
+    - name: Pull Docker image from GitHub Container Registry
+      run: |
+        docker pull ghcr.io/actions/actions-runner:2.321.0
+
+    - name: Tag the Docker image for ACR
+      run: |
+        docker tag ghcr.io/actions/actions-runner:2.321.0 acrtewhekedevaue.azurecr.io/actions-runner:2.321.0
+
+    - name: Push Docker image to ACR
+      run: |
+        docker push acrtewhekedevaue.azurecr.io/actions-runner:2.321.0
