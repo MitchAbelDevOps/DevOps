@@ -27,12 +27,12 @@ jobs:
       uses: azure/cli@v1
       with:
         inlineScript: |
-          CONTAINER_IMAGE_NAME="github-actions-runner:1.0"
+          CONTAINER_IMAGE_NAME="actions-runner:latest"
           CONTAINER_REGISTRY_NAME="acrtewhekedevaue"
 
           # Create the image in the ACR
           az acr build \
             --registry "$CONTAINER_REGISTRY_NAME" \
             --image "$CONTAINER_IMAGE_NAME" \
-            --file "Dockerfile.github" \
-            "https://github.com/Azure-Samples/container-apps-ci-cd-runner-tutorial.git"
+            --git-url https://github.com/actions/runner.git \
+            --file images/Dockerfile
