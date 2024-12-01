@@ -1,0 +1,111 @@
+name: "infra-cae-tewheke-workflow"
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "The target environment for deployment (e.g., dev, test, prod)"
+        required: true
+        type: string
+      root_directory:
+        description: "Root directory where Terraform config is located"
+        required: false
+        default: "GitHubRunner/ContainerApp"
+        type: string
+      sub_directory:
+        description: "Sub-directory containing resource Terraform files"
+        required: false
+        default: "GitHubRunner/ContainerApp"
+        type: string
+      terraform_state_filename:
+        description: "Name for the tfstate blob to create for this resource"
+        required: false
+        default: "kv-tewheke.tfstate"
+        type: string
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "The target environment for deployment (e.g., dev, test, prod)"
+        required: true
+        type: string
+      root_directory:
+        description: "Root directory where Terraform config is located"
+        required: false
+        default: "GitHubRunner/ContainerApp"
+        type: string
+      sub_directory:
+        description: "Sub-directory containing resource Terraform files"
+        required: false
+        default: "GitHubRunner/ContainerApp"
+        type: string
+      terraform_state_filename:
+        description: "Name for the tfstate blob to create for this resource"
+        required: false
+        default: "kv-tewheke.tfstate"
+        type: string
+
+jobs:
+  # Dev Environment
+  dev:
+    if: ${{ inputs.environment == 'dev' }}
+    permissions:
+      id-token: write # Required for OIDC authentication
+      contents: read # To access repository files if needed
+    uses: MitchAbelDevOps/DevOps/.github/workflows/deploy-resource.yaml@main
+    with:
+      environment: "dev"
+      root_directory: ${{ inputs.root_directory }}
+      sub_directory: ${{ inputs.sub_directory }}
+      terraform_state_filename: ${{  inputs.terraform_state_filename }}
+    secrets: inherit
+
+  # # Test Environment
+  # test:
+  #   if: ${{ inputs.environment == 'test' }}
+  #   permissions:
+  #     id-token: write # Required for OIDC authentication
+  #     contents: read  # To access repository files if needed
+  #   uses: MitchAbelDevOps/DevOps/.github/workflows/deploy-resource.yaml@main
+  #   with:
+  #     environment: 'test'
+  #     root_directory: ${{ inputs.root_directory }}
+  #     sub_directory: ${{ inputs.sub_directory }}
+  #     terraform_state_filename: ${{  inputs.terraform_state_filename }}
+
+  # # Staging Environment
+  # staging:
+  #   if: ${{ inputs.environment == 'stg' }}
+  #   permissions:
+  #     id-token: write # Required for OIDC authentication
+  #     contents: read  # To access repository files if needed
+  #   uses: MitchAbelDevOps/DevOps/.github/workflows/deploy-resource.yaml@main
+  #   with:
+  #     environment: 'staging'
+  #     root_directory: ${{ inputs.root_directory }}
+  #     sub_directory: ${{ inputs.sub_directory }}
+  #     terraform_state_filename: ${{  inputs.terraform_state_filename }}
+
+  # # Pre-Prod Environment
+  # pprod:
+  #   if: ${{ inputs.environment == 'pprod' }}
+  #   permissions:
+  #     id-token: write # Required for OIDC authentication
+  #     contents: read  # To access repository files if needed
+  #   uses: MitchAbelDevOps/DevOps/.github/workflows/deploy-resource.yaml@main
+  #   with:
+  #     environment: 'pprod'
+  #     root_directory: ${{ inputs.root_directory }}
+  #     sub_directory: ${{ inputs.sub_directory }}
+  #     terraform_state_filename: ${{  inputs.terraform_state_filename }}
+  # # Prod Environment
+  # prod:
+  #   if: ${{ inputs.environment == 'prod' }}
+  #   permissions:
+  #     id-token: write # Required for OIDC authentication
+  #     contents: read  # To access repository files if needed
+  #   uses: MitchAbelDevOps/DevOps/.github/workflows/deploy-resource.yaml@main
+  #   with:
+  #     environment: 'prod'
+  #     root_directory: ${{ inputs.root_directory }}
+  #     sub_directory: ${{ inputs.sub_directory }}
+  #     terraform_state_filename: ${{  inputs.terraform_state_filename }}
