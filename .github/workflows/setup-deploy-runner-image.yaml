@@ -31,9 +31,12 @@ jobs:
           CONTAINER_REGISTRY_NAME="acrtewhekedevaue"
 
           # Create the image in the ACR
-          az acr build \
-            --registry "$CONTAINER_REGISTRY_NAME" \
-            --image "$CONTAINER_IMAGE_NAME" \
-            --file images/Dockerfile \
-            "https://github.com/actions/runner.git"
+          # az acr build \
+          #   --registry "$CONTAINER_REGISTRY_NAME" \
+          #   --image "$CONTAINER_IMAGE_NAME" \
+          #   --file images/Dockerfile \
+          #   "https://github.com/actions/runner.git"
             
+          docker pull ghcr.io/actions/actions-runner:2.321.0
+          docker tag ghcr.io/actions/actions-runner:2.321.0 acrtewhekedevaue.azurecr.io/actions-runner:2.321.0
+          docker push acrtewhekedevaue.azurecr.io/actions-runner:2.321.0
