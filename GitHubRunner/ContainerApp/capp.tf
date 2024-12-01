@@ -20,6 +20,14 @@ data "azurerm_subnet" "runners_subnet" {
 /**************************************************
 New Resources
 ***************************************************/
+// Container Registry
+resource "azurerm_container_registry" "container_registry" {
+  name                = "acr-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
+  location            = var.location
+  resource_group_name = local.fullResourceGroupName
+  sku = "Basic"
+}
+
 // Container App Environment
 resource "azurerm_container_app_environment" "container_app_environment" {
   // Change name to have 01 suffix
@@ -28,10 +36,10 @@ resource "azurerm_container_app_environment" "container_app_environment" {
   resource_group_name        = local.fullResourceGroupName
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics_workspace.id
   workload_profile {
-    name = "Consumption"
+    name                  = "Consumption"
     workload_profile_type = "Consumption"
-    maximum_count = 2
-    minimum_count = 1
+    maximum_count         = 2
+    minimum_count         = 1
   }
   infrastructure_subnet_id = data.azurerm_subnet.runners_subnet.id
 }
