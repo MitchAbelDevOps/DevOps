@@ -29,7 +29,7 @@ resource "azurerm_container_app_environment" "container_app_environment" {
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics_workspace.id
   workload_profile {
     name = "consmption-workload"
-    workload_profile_type = "Consumptions"
+    workload_profile_type = "Consumption"
     maximum_count = 2
     minimum_count = 1
   }
