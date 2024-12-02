@@ -75,7 +75,7 @@ jobs:
 
     - name: Create Azure Container App Job
       run: |
-        az containerapp job create --update -n "$JOB_NAME" \
+        az containerapp job create -n "$JOB_NAME" \
           -g "$RESOURCE_GROUP" \
           --environment "$ENVIRONMENT" \
           --trigger-type Event \
