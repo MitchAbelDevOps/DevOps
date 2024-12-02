@@ -96,4 +96,4 @@ jobs:
           --memory "4Gi" \
           --secrets "app-key=$GITHUB_APP_KEY" \
           --env-vars "GITHUB_APP_KEY=secretref:app-key"
-          --registry-server "$CONTAINER_REGISTRY_NAME.azurecr.io"
+          # --registry-server "$CONTAINER_REGISTRY_NAME.azurecr.io"
