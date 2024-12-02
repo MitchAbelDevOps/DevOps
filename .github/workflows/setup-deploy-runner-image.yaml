@@ -12,6 +12,7 @@ env:
   REPO_OWNER: "MitchAbelDevOps"
   GITHUB_APP_KEY: ${{ secrets.SELF_HOSTED_RUNNER_APP_PRIVATE_KEY }}
   APP_ID: ${{ vars.SELF_HOSTED_RUNNER_APP_ID }}
+  INSTALLATION_ID: ${{ vars.SELF_HOSTED_RUNNER_INSTALLATION_ID }}
 
 jobs:
   get-runner-image:
@@ -59,12 +60,12 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Generate GitHub Token
-        uses: actions/create-github-app-token@v1
-        with:
-          app-id: ${{ vars.SELF_HOSTED_RUNNER_APP_ID }}
-          private-key: ${{ secrets.SELF_HOSTED_RUNNER_APP_PRIVATE_KEY }}
-          skip-token-revoke: true
+      # - name: Generate GitHub Token
+      #   uses: actions/create-github-app-token@v1
+      #   with:
+      #     app-id: ${{ vars.SELF_HOSTED_RUNNER_APP_ID }}
+      #     private-key: ${{ secrets.SELF_HOSTED_RUNNER_APP_PRIVATE_KEY }}
+      #     skip-token-revoke: true
 
       - name: Create Azure Container App Job
         run: |
@@ -83,7 +84,7 @@ jobs:
             --scale-rule-name "github-runner" \
             --scale-rule-type "github-runner" \
             --scale-rule-metadata "githubAPIURL=https://api.github.com" \
-            "owner=$REPO_OWNER" "runnerScope=org" "repos=DevOps,Connectivity,IntegrationShared" "targetWorkflowQueueLength=1" "applicationId=$APP_ID"\
+            "owner=$REPO_OWNER" "runnerScope=org" "repos=DevOps,Connectivity,IntegrationShared" "targetWorkflowQueueLength=1" "applicationId=$APP_ID" "installationID=$INSTALLATION_ID"\
             --scale-rule-auth "appKey=app-key" \
             --cpu "2.0" \
             --memory "4Gi" \
