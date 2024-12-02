@@ -4,7 +4,7 @@ on:
   workflow_dispatch: # Trigger manually via GitHub Actions interface
 
 env:
-  JOB_NAME: "MoJ-Runner"
+  JOB_NAME: "tewheke-runner"
   RESOURCE_GROUP: "rg-shared-tewheke-dev-aue"
   ENVIRONMENT: "cae-tewheke-dev-aue"
   CONTAINER_REGISTRY_NAME: "acrtewhekedevaue"
