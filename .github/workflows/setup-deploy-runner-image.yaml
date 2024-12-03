@@ -73,6 +73,10 @@ jobs:
         #     private-key: ${{ secrets.SELF_HOSTED_RUNNER_APP_PRIVATE_KEY }}
         #     skip-token-revoke: true
 
+      - name: Log in to Azure Container Registry
+        run: |
+          az acr login --name $CONTAINER_REGISTRY_NAME
+
       - name: Create Azure Container App Job
         run: |
           az containerapp job create -n "$JOB_NAME" \
