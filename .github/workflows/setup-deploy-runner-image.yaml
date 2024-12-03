@@ -42,7 +42,7 @@ jobs:
 
       - name: Build and push Docker image using Azure Container Registry (ACR)
         run: |
-          az acr build -r $CONTAINER_REGISTRY_NAME -g $RESOURCE_GROUP -f GithubRunner/RunnerImage/Dockerfile -t $CONTAINER_REGISTRY_NAME.azurecr.io/$CONTAINER_IMAGE_NAME GithubRunner/RunnerImage
+          az acr build -r $CONTAINER_REGISTRY_NAME -g $RESOURCE_GROUP -f GitHubRunner/RunnerImage/Dockerfile -t $CONTAINER_REGISTRY_NAME.azurecr.io/$CONTAINER_IMAGE_NAME GitHubRunner/RunnerImage
 
   # create-containerapp-job:
   #   runs-on: ubuntu-latest
