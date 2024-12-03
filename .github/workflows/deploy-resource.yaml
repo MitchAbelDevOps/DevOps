@@ -1,29 +1,29 @@
-name: 'Deploy Resource'
+name: "Deploy Resource"
 
 on:
   workflow_call:
     inputs:
       environment:
-        description: 'Deployment Environment'
+        description: "Deployment Environment"
         required: true
         type: string
       root_directory:
-        description: 'Root directory where Terraform config is located'
+        description: "Root directory where Terraform config is located"
         required: true
         type: string
       sub_directory:
-        description: 'Sub-directory containing resource Terraform files'
+        description: "Sub-directory containing resource Terraform files"
         required: true
         type: string
       terraform_state_filename:
-        description: 'Name for the tfstate blob to create for this resource'
+        description: "Name for the tfstate blob to create for this resource"
         required: true
         type: string
 
 jobs:
   deployment:
-    name: 'Deploy to ${{ inputs.environment }}'
-    runs-on: ubuntu-latest
+    name: "Deploy to ${{ inputs.environment }}"
+    runs-on: self-hosted
     environment: ${{ inputs.environment }}
     steps:
       - name: Checkout Repo
@@ -42,7 +42,7 @@ jobs:
         run: |
           # Move all .tf files from the subdirectory to the root directory
           find ${{ inputs.sub_directory }} -maxdepth 1 -name '*.tf' -exec mv {} ${{ inputs.root_directory }}/ \;
-          
+
           # Dynamically select the correct .tfvars file using interpolation
           cp ${{ inputs.sub_directory }}/Variables/${{ inputs.environment }}.tfvars ${{ inputs.root_directory }}/${{ inputs.environment }}.tfvars
 
@@ -50,7 +50,7 @@ jobs:
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: '1.5.0'
+          terraform_version: "1.5.0"
 
       # Log in to Azure with OIDC
       - name: Azure Login
