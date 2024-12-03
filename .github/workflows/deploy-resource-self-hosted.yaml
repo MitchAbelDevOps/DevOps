@@ -1,0 +1,97 @@
+name: "Deploy Resource Self Hosted"
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "Deployment Environment"
+        required: true
+        type: string
+      root_directory:
+        description: "Root directory where Terraform config is located"
+        required: true
+        type: string
+      sub_directory:
+        description: "Sub-directory containing resource Terraform files"
+        required: true
+        type: string
+      terraform_state_filename:
+        description: "Name for the tfstate blob to create for this resource"
+        required: true
+        type: string
+
+jobs:
+  deployment:
+    name: "Deploy to ${{ inputs.environment }}"
+    runs-on: self-hosted
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      # Set TF vars from GitHub environment vars so we don't have to duplicate default values
+      - name: Set Environment Variables
+        run: |
+          echo "TF_VAR_location=australiaeast" >> $GITHUB_ENV
+          echo "TF_VAR_locationSuffix=aue" >> $GITHUB_ENV
+          echo "TF_VAR_resourceSuffix=tewheke" >> $GITHUB_ENV
+          echo "TF_VAR_environment=${{ inputs.environment }}" >> $GITHUB_ENV
+
+      # Copy Resource Specific Files to Root Directory
+      - name: Prepare Terraform Files
+        run: |
+          # Move all .tf files from the subdirectory to the root directory
+          find ${{ inputs.sub_directory }} -maxdepth 1 -name '*.tf' -exec mv {} ${{ inputs.root_directory }}/ \;
+
+          # Dynamically select the correct .tfvars file using interpolation
+          cp ${{ inputs.sub_directory }}/Variables/${{ inputs.environment }}.tfvars ${{ inputs.root_directory }}/${{ inputs.environment }}.tfvars
+
+      # Install Terraform
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: "1.5.0"
+
+      # Log in to Azure with OIDC
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Retrieve Terraform State Storage Account key
+      - name: Get Terraform Storage Account Key
+        id: get-key
+        uses: azure/cli@v2
+        with:
+          inlineScript: |
+            key=$(az storage account keys list -g "rg-integrationmanagement-aue" -n "saterraformstateaue${{ inputs.environment }}" --query [0].value -o tsv)
+            echo "TF_STORAGE_ACCOUNT_KEY=$key" >> $GITHUB_ENV
+
+      # Terraform Init with Terraform State Storage Account details
+      - name: Terraform Init
+        run: |
+          terraform init \
+            -backend-config="storage_account_name=saterraformstateaue${{ inputs.environment }}" \
+            -backend-config="container_name=terraform-state" \
+            -backend-config="key=${{ inputs.terraform_state_filename }}" \
+            -backend-config="access_key=${TF_STORAGE_ACCOUNT_KEY}"
+        working-directory: ${{ inputs.root_directory }}
+
+      # Terraform Plan with environment specific tfvars file
+      - name: Terraform Plan
+        run: |
+          terraform plan \
+            -input=false \
+            -var-file="${{ inputs.environment }}.tfvars" \
+            -out=deployment.tfplan
+        working-directory: ${{ inputs.root_directory }}
+
+      # Terraform Apply
+      - name: Terraform Apply
+        run: |
+          terraform apply -input=false deployment.tfplan
+        working-directory: ${{ inputs.root_directory }}
+
+      # May need to do dynamic file cleanup based on what we moved to root?
