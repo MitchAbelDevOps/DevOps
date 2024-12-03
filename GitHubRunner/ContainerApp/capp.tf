@@ -29,6 +29,13 @@ resource "azurerm_container_registry" "container_registry" {
   admin_enabled = true
 }
 
+// ACR Pull UAMI role assignment
+resource "azurerm_role_assignment" "uami_role_assignment" {
+  scope                = azurerm_container_registry.container_registry.id
+  role_definition_name = "AcrPull"
+  principal_id         = data.azurerm_user_assigned_identity.keyvault_secret_reader.principal_id
+}
+
 // Container App Environment
 resource "azurerm_container_app_environment" "container_app_environment" {
   // Change name to have 01 suffix
@@ -36,6 +43,7 @@ resource "azurerm_container_app_environment" "container_app_environment" {
   location                   = var.location
   resource_group_name        = local.fullResourceGroupName
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics_workspace.id
+  
   workload_profile {
     name                  = "Consumption"
     workload_profile_type = "Consumption"
