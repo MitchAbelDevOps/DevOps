@@ -5,6 +5,9 @@ set -o pipefail
 app_id=$GITHUB_APP_ID
 pem=$GITHUB_APP_KEY
 
+printf '%s\n' "JWT: $app_id"
+printf '%s\n' "JWT: $pem"
+
 now=$(date +%s)
 iat=$((${now} - 60)) # Issues 60 seconds in the past
 exp=$((${now} + 600)) # Expires 10 minutes in the future
