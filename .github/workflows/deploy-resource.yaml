@@ -23,7 +23,7 @@ on:
 jobs:
   deployment:
     name: "Deploy to ${{ inputs.environment }}"
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
       - name: Checkout Repo

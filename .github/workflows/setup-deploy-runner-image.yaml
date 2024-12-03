@@ -96,6 +96,6 @@ jobs:
             --cpu "2.0" \
             --memory "4Gi" \
             --secrets "app-key=$GITHUB_APP_KEY" \
-            --env-vars "GITHUB_APP_KEY=secretref:app-key" \
+            --env-vars "GITHUB_APP_KEY=secretref:app-key" "GH_URL=https://github.com/$REPO_OWNER" "REGISTRATION_TOKEN_API_URL=https://api.github.com/repos/$REPO_OWNER/actions/runners/registration-token" \
             --registry-server "$CONTAINER_REGISTRY_NAME.azurecr.io" \
             --registry-identity "$ACRPULL_UAMI"
