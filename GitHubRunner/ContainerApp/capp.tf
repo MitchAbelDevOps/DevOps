@@ -17,6 +17,11 @@ data "azurerm_subnet" "runners_subnet" {
   virtual_network_name = "vnet-integration-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
 }
 
+data "azurerm_user_assigned_identity" "acr_pull" {
+  name                = "uami-acr-pull-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
+  resource_group_name = local.fullResourceGroupName
+}
+
 /**************************************************
 New Resources
 ***************************************************/
@@ -33,7 +38,7 @@ resource "azurerm_container_registry" "container_registry" {
 resource "azurerm_role_assignment" "uami_role_assignment" {
   scope                = azurerm_container_registry.container_registry.id
   role_definition_name = "AcrPull"
-  principal_id         = data.azurerm_user_assigned_identity.keyvault_secret_reader.principal_id
+  principal_id         = data.azurerm_user_assigned_identity.acr_pull.principal_id
 }
 
 // Container App Environment
