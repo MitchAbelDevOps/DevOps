@@ -45,6 +45,11 @@ jobs:
           echo "Listing the current directory contents"
           ls -alh
 
+      - name: List files in the GithubRunner/RunnerImage directory
+        run: |
+          echo "Listing files in GithubRunner/RunnerImage"
+          ls -alh GithubRunner/RunnerImage
+
       - name: Build and push Docker image using Azure Container Registry (ACR)
         run: |
           az acr build -r $CONTAINER_REGISTRY_NAME -g $RESOURCE_GROUP -f GithubRunner/RunnerImage/Dockerfile -t $CONTAINER_REGISTRY_NAME.azurecr.io/$CONTAINER_IMAGE_NAME .
