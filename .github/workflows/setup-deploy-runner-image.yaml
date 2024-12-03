@@ -45,21 +45,9 @@ jobs:
           echo "Listing the current directory contents"
           ls -alh
 
-      - name: Build Docker image from custom Dockerfile
+      - name: Build and push Docker image using Azure Container Registry (ACR)
         run: |
-          docker build -t $CONTAINER_REGISTRY_NAME.azurecr.io/$CONTAINER_IMAGE_NAME -f GithubRunner/RunnerImage/Dockerfile .
-
-      - name: Tag the Docker image for ACR
-        run: |
-          docker tag $CONTAINER_REGISTRY_NAME.azurecr.io/$CONTAINER_IMAGE_NAME $CONTAINER_REGISTRY_NAME.azurecr.io/$CONTAINER_IMAGE_NAME:latest
-
-      - name: Push Docker image to ACR
-        run: |
-          docker push $CONTAINER_REGISTRY_NAME.azurecr.io/$CONTAINER_IMAGE_NAME:latest
-
-      - name: Push Docker image with custom tag
-        run: |
-          docker push $CONTAINER_REGISTRY_NAME.azurecr.io/$CONTAINER_IMAGE_NAME
+          az acr build -r $CONTAINER_REGISTRY_NAME -g $RESOURCE_GROUP -f GithubRunner/RunnerImage/Dockerfile -t $CONTAINER_REGISTRY_NAME.azurecr.io/$CONTAINER_IMAGE_NAME .
 
   # create-containerapp-job:
   #   runs-on: ubuntu-latest
