@@ -1,28 +1,41 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Generate a JWT using the GitHub App's private key
-generate_jwt() {
-  header='{
-    "alg": "RS256",
-    "typ": "JWT"
-  }'
+set -o pipefail
 
-  payload=$(cat <<EOF
-{
-  "iat": $(date +%s),
-  "exp": $(($(date +%s) + 600)),
-  "iss": "$GITHUB_APP_ID"
-}
-EOF
+app_id=$GITHUB_APP_ID
+pem=$GITHUB_APP_KEY
+
+now=$(date +%s)
+iat=$((${now} - 60)) # Issues 60 seconds in the past
+exp=$((${now} + 600)) # Expires 10 minutes in the future
+
+b64enc() { openssl base64 | tr -d '=' | tr '/+' '_-' | tr -d '\n'; }
+
+header_json='{
+    "typ":"JWT",
+    "alg":"RS256"
+}'
+# Header encode
+header=$( echo -n "${header_json}" | b64enc )
+
+payload_json="{
+    \"iat\":${iat},
+    \"exp\":${exp},
+    \"iss\":\"${app_id}\"
+}"
+# Payload encode
+payload=$( echo -n "${payload_json}" | b64enc )
+
+# Signature
+header_payload="${header}"."${payload}"
+signature=$(
+    openssl dgst -sha256 -sign <(echo -n "${pem}") \
+    <(echo -n "${header_payload}") | b64enc
 )
 
-  # Generate the JWT
-  jwt=$(echo -n "${header}" | base64 | tr -d '\n=')\
-.$(echo -n "${payload}" | base64 | tr -d '\n=')\
-| openssl dgst -sha256 -sign "$GITHUB_APP_KEY" | base64 | tr -d '\n='
-
-  echo $jwt
-}
+# Create JWT
+JWT="${header_payload}"."${signature}"
+printf '%s\n' "JWT: $JWT"
 
 # Exchange the JWT for an installation token
 get_installation_token() {
@@ -32,6 +45,8 @@ get_installation_token() {
   installation_id=$(curl -s -H "Authorization: Bearer $jwt" \
                         -H "Accept: application/vnd.github+json" \
                         https://api.github.com/app/installations | jq -r '.[0].id')
+
+  echo "Installation ID: $installation_id"
 
   if [ -z "$installation_id" ] || [ "$installation_id" == "null" ]; then
     echo "Failed to retrieve installation ID"
@@ -45,8 +60,12 @@ get_installation_token() {
                 https://api.github.com/app/installations/$installation_id/access_tokens \
           | jq -r '.token')
 
+  echo "Installation Token: $token"
   echo $token
 }
+
+echo "Getting installation token"
+installation_token=$(get_installation_token "$JWT")
 
 # Fetch the registration token for the self-hosted runner
 get_registration_token() {
@@ -58,17 +77,10 @@ get_registration_token() {
                   https://api.github.com/orgs/"${ORG_NAME}"/actions/runners/registration-token \
             | jq -r '.token')
 
+  echo "Registration Token: $reg_token"
   echo $reg_token
 }
 
-# Main Flow
-echo "Generating JWT"
-jwt=$(generate_jwt)
-echo "Created JWT"
-echo $jwt
-
-echo "Getting installation token"
-installation_token=$(get_installation_token "$jwt")
 REG_TOKEN=$(get_registration_token "$installation_token")
 
 if [ -z "$REG_TOKEN" ] || [ "$REG_TOKEN" == "null" ]; then
@@ -77,4 +89,5 @@ if [ -z "$REG_TOKEN" ] || [ "$REG_TOKEN" == "null" ]; then
 fi
 
 # Configure and run the self-hosted runner
+echo "Configuring and starting the runner"
 ./config.sh --url https://github.com/"${ORG_NAME}" --token "${REG_TOKEN}" --unattended --ephemeral && ./run.sh
