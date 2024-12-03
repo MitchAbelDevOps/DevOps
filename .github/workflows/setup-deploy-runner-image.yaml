@@ -26,6 +26,9 @@ jobs:
       contents: read # To access repository files if needed
 
     steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
       - name: Azure Login
         uses: azure/login@v1
         with:
