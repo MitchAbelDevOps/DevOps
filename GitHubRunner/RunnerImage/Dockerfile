@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y curl jq && \
     rm -rf /var/lib/apt/lists/*
 
 # copy over the start.sh script
-COPY start.sh start.sh
+COPY GithubRunner/RunnerImage/start.sh start.sh
 
 # make the script executable
 RUN chmod +x start.sh
