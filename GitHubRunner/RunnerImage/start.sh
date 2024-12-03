@@ -62,7 +62,12 @@ get_registration_token() {
 }
 
 # Main Flow
+echo "Generating JWT"
 jwt=$(generate_jwt)
+echo "Created JWT"
+echo $jwt
+
+echo "Getting installation token"
 installation_token=$(get_installation_token "$jwt")
 REG_TOKEN=$(get_registration_token "$installation_token")
 
