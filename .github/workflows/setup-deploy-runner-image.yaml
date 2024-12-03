@@ -91,7 +91,7 @@ jobs:
             --scale-rule-name "github-runner" \
             --scale-rule-type "github-runner" \
             --scale-rule-metadata "githubAPIURL=https://api.github.com" \
-            "owner=$REPO_OWNER" "runnerScope=org" "repos=DevOps,Connectivity,IntegrationShared" "targetWorkflowQueueLength=1" "applicationId=$APP_ID" "installationID=$INSTALLATION_ID"\
+            "owner=$REPO_OWNER" "runnerScope=org" "repos=DevOps,Connectivity,IntegrationShared" "targetWorkflowQueueLength=1" "applicationID=$APP_ID" "installationID=$INSTALLATION_ID"\
             --scale-rule-auth "appKey=app-key" \
             --cpu "2.0" \
             --memory "4Gi" \
