@@ -44,46 +44,46 @@ jobs:
         run: |
           az acr build -r $CONTAINER_REGISTRY_NAME -g $RESOURCE_GROUP -f GitHubRunner/RunnerImage/Dockerfile -t $CONTAINER_REGISTRY_NAME.azurecr.io/$CONTAINER_IMAGE_NAME GitHubRunner/RunnerImage
 
-  # create-containerapp-job:
-  #   runs-on: ubuntu-latest
-  #   needs: get-runner-image
-  #   environment:
-  #     name: dev
+  create-containerapp-job:
+    runs-on: ubuntu-latest
+    needs: get-runner-image
+    environment:
+      name: dev
 
-  #   permissions:
-  #     id-token: write # Required for OIDC authentication
-  #     contents: read # To access repository files if needed
+    permissions:
+      id-token: write # Required for OIDC authentication
+      contents: read # To access repository files if needed
 
-  #   steps:
-  #     - name: Azure Login
-  #       uses: azure/login@v1
-  #       with:
-  #         client-id: ${{ secrets.AZURE_CLIENT_ID }}
-  #         tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-  #         subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-  #     - name: Create Azure Container App Job
-  #       run: |
-  #         az containerapp job create -n "$JOB_NAME" \
-  #           -g "$RESOURCE_GROUP" \
-  #           --environment "$ENVIRONMENT" \
-  #           --trigger-type Event \
-  #           --replica-timeout 1800 \
-  #           --replica-retry-limit 0 \
-  #           --replica-completion-count 1 \
-  #           --parallelism 1 \
-  #           --image "$CONTAINER_REGISTRY_NAME.azurecr.io/$CONTAINER_IMAGE_NAME" \
-  #           --min-executions 0 \
-  #           --max-executions 10 \
-  #           --polling-interval 30 \
-  #           --scale-rule-name "github-runner" \
-  #           --scale-rule-type "github-runner" \
-  #           --scale-rule-metadata "githubAPIURL=https://api.github.com" \
-  #           "owner=$REPO_OWNER" "runnerScope=org" "repos=DevOps,Connectivity,IntegrationShared" "targetWorkflowQueueLength=1" "applicationID=$APP_ID" "installationID=$INSTALLATION_ID"\
-  #           --scale-rule-auth "appKey=app-key" \
-  #           --cpu "2.0" \
-  #           --memory "4Gi" \
-  #           --secrets "app-key=$GITHUB_APP_KEY" \
-  #           --env-vars "GITHUB_APP_ID=$APP_ID" "GITHUB_APP_KEY=secretref:app-key" "ORG_NAME=$REPO_OWNER" "GH_URL=https://github.com/$REPO_OWNER" "REGISTRATION_TOKEN_API_URL=https://api.github.com/repos/$REPO_OWNER/actions/runners/registration-token" \
-  #           --registry-server "$CONTAINER_REGISTRY_NAME.azurecr.io" \
-  #           --registry-identity "$ACRPULL_UAMI"
+      - name: Create Azure Container App Job
+        run: |
+          az containerapp job create -n "$JOB_NAME" \
+            -g "$RESOURCE_GROUP" \
+            --environment "$ENVIRONMENT" \
+            --trigger-type Event \
+            --replica-timeout 1800 \
+            --replica-retry-limit 0 \
+            --replica-completion-count 1 \
+            --parallelism 1 \
+            --image "$CONTAINER_REGISTRY_NAME.azurecr.io/$CONTAINER_IMAGE_NAME" \
+            --min-executions 0 \
+            --max-executions 10 \
+            --polling-interval 30 \
+            --scale-rule-name "github-runner" \
+            --scale-rule-type "github-runner" \
+            --scale-rule-metadata "githubAPIURL=https://api.github.com" \
+            "owner=$REPO_OWNER" "runnerScope=org" "repos=DevOps,Connectivity,IntegrationShared" "targetWorkflowQueueLength=1" "applicationID=$APP_ID" "installationID=$INSTALLATION_ID"\
+            --scale-rule-auth "appKey=app-key" \
+            --cpu "2.0" \
+            --memory "4Gi" \
+            --secrets "app-key=$GITHUB_APP_KEY" \
+            --env-vars "GITHUB_APP_ID=$APP_ID" "GITHUB_APP_KEY=secretref:app-key" "ORG_NAME=$REPO_OWNER" "GH_URL=https://github.com/$REPO_OWNER" "REGISTRATION_TOKEN_API_URL=https://api.github.com/repos/$REPO_OWNER/actions/runners/registration-token" \
+            --registry-server "$CONTAINER_REGISTRY_NAME.azurecr.io" \
+            --registry-identity "$ACRPULL_UAMI"
