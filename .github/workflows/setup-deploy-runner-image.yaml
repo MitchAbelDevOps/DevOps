@@ -40,10 +40,10 @@ jobs:
         run: |
           az acr login --name $CONTAINER_REGISTRY_NAME
 
-      - name: List files in the working directory
+      - name: List files in the current working directory
         run: |
-          echo "Listing the root directory contents"
-          ls -alh /github/workspace
+          echo "Listing the current directory contents"
+          ls -alh
 
       - name: Build Docker image from custom Dockerfile
         run: |
