@@ -1,4 +1,4 @@
-name: "Deploy Resource Self Hosted"
+name: "Self Hosted Network Test"
 
 on:
   workflow_call:
@@ -22,8 +22,6 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      # Retrieve Terraform State Storage Account key
-      # NOTE: Changed from the marketplace azure/cli@v2 as it didn't run well on the self-hosted runner
       - name: Test KeyVault access
         run: |
           az keyvault secret list --vault-name kv-tewheke-dev-aue
