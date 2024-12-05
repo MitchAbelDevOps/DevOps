@@ -66,3 +66,23 @@ if [ -z "$installation_token" ] || [ "$installation_token" == "null" ]; then
 fi
 
 echo "Installation Token: $installation_token"
+
+
+# Fetch the registration token for the self-hosted runner
+echo "Fetching registration token..."
+reg_token=$(curl -s -X POST \
+                -H "Authorization: token $installation_token" \
+                -H "Accept: application/vnd.github+json" \
+                https://api.github.com/orgs/"${ORG_NAME}"/actions/runners/registration-token \
+          | jq -r '.token')
+
+echo "Registration Token: $reg_token"
+
+if [ -z "$reg_token" ] || [ "$reg_token" == "null" ]; then
+  echo "Failed to retrieve the registration token"
+  exit 1
+fi
+
+# Configure and run the self-hosted runner
+echo "Configuring and starting the runner"
+./config.sh --url https://github.com/"${ORG_NAME}" --token "${reg_token}" --unattended --ephemeral && ./run.sh
