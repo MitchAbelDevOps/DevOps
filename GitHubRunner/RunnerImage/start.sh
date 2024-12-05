@@ -83,6 +83,6 @@ if [ -z "$reg_token" ] || [ "$reg_token" == "null" ]; then
   exit 1
 fi
 
-# # Configure and run the self-hosted runner
-# echo "Configuring and starting the runner"
-# ./config.sh --url https://github.com/"${ORG_NAME}" --token "${reg_token}" --unattended --ephemeral && ./run.sh
+# Configure and run the self-hosted runner
+echo "Configuring and starting the runner"
+./config.sh --url https://github.com/"${ORG_NAME}" --token "${reg_token}" --unattended --ephemeral && ./run.sh
