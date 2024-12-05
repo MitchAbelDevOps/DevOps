@@ -37,35 +37,35 @@ signature=$(
 JWT="${header_payload}"."${signature}"
 printf '%s\n' "JWT: $JWT"
 
-# # Exchange the JWT for an installation token
-# get_installation_token() {
-#   jwt=$1
+# Exchange the JWT for an installation token
+get_installation_token() {
+  jwt=$1
 
-#   # Fetch the installation ID for the App (assuming single installation)
-#   installation_id=$(curl -s -H "Authorization: Bearer $jwt" \
-#                         -H "Accept: application/vnd.github+json" \
-#                         https://api.github.com/app/installations | jq -r '.[0].id')
+  # Fetch the installation ID for the App (assuming single installation)
+  installation_id=$(curl -s -H "Authorization: Bearer $JWT" \
+                        -H "Accept: application/vnd.github+json" \
+                        https://api.github.com/app/installations | jq -r '.[0].id')
 
-#   echo "Installation ID: $installation_id"
+  echo "Installation ID: $installation_id"
 
-#   if [ -z "$installation_id" ] || [ "$installation_id" == "null" ]; then
-#     echo "Failed to retrieve installation ID"
-#     exit 1
-#   fi
+  if [ -z "$installation_id" ] || [ "$installation_id" == "null" ]; then
+    echo "Failed to retrieve installation ID"
+    exit 1
+  fi
 
-#   # Use the installation ID to get an access token
-#   token=$(curl -s -X POST \
-#                 -H "Authorization: Bearer $jwt" \
-#                 -H "Accept: application/vnd.github+json" \
-#                 https://api.github.com/app/installations/$installation_id/access_tokens \
-#           | jq -r '.token')
+  # Use the installation ID to get an access token
+  token=$(curl -s -X POST \
+                -H "Authorization: Bearer $jwt" \
+                -H "Accept: application/vnd.github+json" \
+                https://api.github.com/app/installations/$installation_id/access_tokens \
+          | jq -r '.token')
 
-#   echo "Installation Token: $token"
-#   echo $token
-# }
+  echo "Installation Token: $token"
+  echo $token
+}
 
-# echo "Getting installation token"
-# installation_token=$(get_installation_token "$JWT")
+echo "Getting installation token"
+installation_token=$(get_installation_token "$JWT")
 
 # # Fetch the registration token for the self-hosted runner
 # get_registration_token() {
