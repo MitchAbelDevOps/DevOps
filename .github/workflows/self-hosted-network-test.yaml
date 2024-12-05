@@ -10,6 +10,9 @@ on:
 
 jobs:
   deployment:
+    permissions:
+      id-token: write # Required for OIDC authentication
+      contents: read # To access repository files if needed
     name: "Deploy to ${{ inputs.environment }}"
     runs-on: self-hosted
     environment: ${{ inputs.environment }}
