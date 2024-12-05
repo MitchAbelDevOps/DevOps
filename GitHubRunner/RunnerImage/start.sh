@@ -5,9 +5,6 @@ set -o pipefail
 app_id=$GITHUB_APP_ID
 pem=$GITHUB_APP_KEY
 
-printf '%s\n' "JWT: $app_id"
-printf '%s\n' "JWT: $pem"
-
 now=$(date +%s)
 iat=$((${now} - 60)) # Issues 60 seconds in the past
 exp=$((${now} + 600)) # Expires 10 minutes in the future
@@ -32,7 +29,7 @@ payload=$( echo -n "${payload_json}" | b64enc )
 # Signature
 header_payload="${header}"."${payload}"
 signature=$(
-    openssl dgst -sha256 -sign <(echo -n "${pem}") \
+    openssl dgst -sha256 -sign <(echo "${pem}") \
     <(echo -n "${header_payload}") | b64enc
 )
 
