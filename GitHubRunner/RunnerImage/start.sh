@@ -3,7 +3,7 @@
 set -o pipefail
 
 app_id=$GITHUB_APP_ID
-pem=$GITHUB_APP_KEY
+pem=$(echo -e "${GITHUB_APP_KEY}")
 
 now=$(date +%s)
 iat=$((${now} - 60)) # Issues 60 seconds in the past
