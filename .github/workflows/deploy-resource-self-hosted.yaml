@@ -61,13 +61,11 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       # Retrieve Terraform State Storage Account key
+      # NOTE: Changed from the marketplace azure/cli@v2 as it didn't run well on the self-hosted runner
       - name: Get Terraform Storage Account Key
-        id: get-key
-        uses: azure/cli@v2
-        with:
-          inlineScript: |
-            key=$(az storage account keys list -g "rg-integrationmanagement-aue" -n "saterraformstateaue${{ inputs.environment }}" --query [0].value -o tsv)
-            echo "TF_STORAGE_ACCOUNT_KEY=$key" >> $GITHUB_ENV
+        run: |
+          key=$(az storage account keys list -g "rg-integrationmanagement-aue" -n "saterraformstateaue${{ inputs.environment }}" --query [0].value -o tsv)
+          echo "TF_STORAGE_ACCOUNT_KEY=$key" >> $GITHUB_ENV
 
       # Terraform Init with Terraform State Storage Account details
       - name: Terraform Init
