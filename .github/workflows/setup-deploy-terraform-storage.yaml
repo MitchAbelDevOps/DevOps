@@ -11,47 +11,54 @@ jobs:
 
     permissions:
       id-token: write # Required for OIDC authentication
-      contents: read  # To access repository files if needed
+      contents: read # To access repository files if needed
 
     steps:
-    # Step 1: Login to Azure using OIDC
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      # Step 1: Login to Azure using OIDC
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-    # Step 2: Deploy the storage account using Azure CLI
-    - name: Deploy Storage Account
-      uses: azure/cli@v1
-      with:
-        inlineScript: |
-          RESOURCE_GROUP="rg-integrationmanagement-aue"
-          STORAGE_ACCOUNT_NAME="saterraformstateauedev"
-          LOCATION="australiaeast"
-          SKU="Standard_LRS"
-          CONTAINER_NAME="terraform-state"
+      # Step 2: Deploy the storage account using Azure CLI
+      - name: Deploy Storage Account
+        uses: azure/cli@v1
+        with:
+          inlineScript: |
+            REGION="${{ env.REGION }}"
+            REGION_SUFFIX="${{ env.REGION_SUFFIX }}"
+            ENVIRONMENT_SUFFIX="${{ env.ENVIRONMENT_SUFFIX }}"
 
-          # Create the resource group if it doesn't exist
-          az group create --name $RESOURCE_GROUP --location $LOCATION
+            RESOURCE_GROUP="rg-integrationmanagement-${REGION_SUFFIX}"
+            STORAGE_ACCOUNT_NAME="samojtwwtfstate${REGION_SUFFIX}${ENVIRONMENT_SUFFIX}"
+            LOCATION="${REGION}"
+            SKU="Standard_LRS"
+            CONTAINER_NAME="terraform-state"
 
-          # Create the storage account
-          az storage account create \
-            --name $STORAGE_ACCOUNT_NAME \
-            --resource-group $RESOURCE_GROUP \
-            --location $LOCATION \
-            --sku $SKU \
-            --kind StorageV2
+            echo "Deploying to Resource Group: $RESOURCE_GROUP"
+            echo "Using Storage Account Name: $STORAGE_ACCOUNT_NAME"
 
-          # Retrieve the storage account key
-          ACCOUNT_KEY=$(az storage account keys list \
-            --resource-group $RESOURCE_GROUP \
-            --account-name $STORAGE_ACCOUNT_NAME \
-            --query "[0].value" -o tsv)
+            # Create the resource group if it doesn't exist
+            az group create --name $RESOURCE_GROUP --location $LOCATION
 
-          # Create the blob container
-          az storage container create \
-            --name $CONTAINER_NAME \
-            --account-name $STORAGE_ACCOUNT_NAME \
-            --account-key $ACCOUNT_KEY
+            # Create the storage account
+            az storage account create \
+              --name $STORAGE_ACCOUNT_NAME \
+              --resource-group $RESOURCE_GROUP \
+              --location $LOCATION \
+              --sku $SKU \
+              --kind StorageV2
+
+            # Retrieve the storage account key
+            ACCOUNT_KEY=$(az storage account keys list \
+              --resource-group $RESOURCE_GROUP \
+              --account-name $STORAGE_ACCOUNT_NAME \
+              --query "[0].value" -o tsv)
+
+            # Create the blob container
+            az storage container create \
+              --name $CONTAINER_NAME \
+              --account-name $STORAGE_ACCOUNT_NAME \
+              --account-key $ACCOUNT_KEY

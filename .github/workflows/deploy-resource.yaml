@@ -29,11 +29,11 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
-      # Set TF vars from GitHub environment vars so we don't have to duplicate default values
+      # Set TF vars from GitHub environment vars
       - name: Set Environment Variables
         run: |
-          echo "TF_VAR_location=australiaeast" >> $GITHUB_ENV
-          echo "TF_VAR_locationSuffix=aue" >> $GITHUB_ENV
+          echo "TF_VAR_location=${{ env.REGION }}" >> $GITHUB_ENV
+          echo "TF_VAR_locationSuffix=${{ env.REGION_SUFFIX }}" >> $GITHUB_ENV
           echo "TF_VAR_resourceSuffix=tewheke" >> $GITHUB_ENV
           echo "TF_VAR_environment=${{ inputs.environment }}" >> $GITHUB_ENV
 
@@ -66,14 +66,21 @@ jobs:
         uses: azure/cli@v2
         with:
           inlineScript: |
-            key=$(az storage account keys list -g "rg-integrationmanagement-aue" -n "saterraformstateaue${{ inputs.environment }}" --query [0].value -o tsv)
+            RESOURCE_GROUP="rg-integrationmanagement-${{ env.REGION_SUFFIX }}"
+            STORAGE_ACCOUNT_NAME="saterraformstate${{ env.REGION_SUFFIX }}${{ inputs.environment }}"
+
+            key=$(az storage account keys list \
+              -g $RESOURCE_GROUP \
+              -n $STORAGE_ACCOUNT_NAME \
+              --query "[0].value" -o tsv)
+
             echo "TF_STORAGE_ACCOUNT_KEY=$key" >> $GITHUB_ENV
 
       # Terraform Init with Terraform State Storage Account details
       - name: Terraform Init
         run: |
           terraform init \
-            -backend-config="storage_account_name=saterraformstateaue${{ inputs.environment }}" \
+            -backend-config="storage_account_name=saterraformstate${{ env.REGION_SUFFIX }}${{ inputs.environment }}" \
             -backend-config="container_name=terraform-state" \
             -backend-config="key=${{ inputs.terraform_state_filename }}" \
             -backend-config="access_key=${TF_STORAGE_ACCOUNT_KEY}"
@@ -93,5 +100,3 @@ jobs:
         run: |
           terraform apply -input=false deployment.tfplan
         working-directory: ${{ inputs.root_directory }}
-
-      # May need to do dynamic file cleanup based on what we moved to root?
