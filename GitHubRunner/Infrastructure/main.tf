@@ -2,17 +2,17 @@
 Existing Resources
 ***************************************************/
 data "azurerm_log_analytics_workspace" "log_analytics_workspace" {
-  name                = "log-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
+  name                = "log-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}-01"
   resource_group_name = local.fullResourceGroupName
 }
 
 data "azurerm_virtual_network" "tewheke_vnet" {
-  name                = "vnet-integration-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
+  name                = "vnet-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}-01"
   resource_group_name = "${var.networkingResourceGroupName}-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
 }
 
 data "azurerm_subnet" "runners_subnet" {
-  name                 = "snet-runners-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
+  name                 = "snet-${var.resourceSuffix}-${var.environment}-runners-${var.locationSuffix}-01"
   resource_group_name  = "${var.networkingResourceGroupName}-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
   virtual_network_name = "vnet-integration-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
 }
