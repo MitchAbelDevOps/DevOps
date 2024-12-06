@@ -61,7 +61,7 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Find ACR User Assigned Identity ID
+      - name: Find ACR Pull User Assigned Identity ID
         env:
           REGION_SUFFIX: ${{ vars.REGION_SUFFIX }}
           ENVIRONMENT_SUFFIX: ${{ vars.ENVIRONMENT_SUFFIX }}
@@ -70,15 +70,34 @@ jobs:
           echo "Looking for User Assigned Identity: $UAI_NAME"
 
           # Fetch the UAI ID
-          UAI_ID=$(az identity list --query "[?name=='${UAI_NAME}'].id" -o tsv)
+          UAMI_ACRPULL_ID=$(az identity list --query "[?name=='${UAI_NAME}'].id" -o tsv)
 
-          if [ -z "$UAI_ID" ]; then
+          if [ -z "$UAMI_ACRPULL_ID" ]; then
             echo "No User Assigned Identity found with name $UAI_NAME"
             exit 1
           fi
 
-          echo "User Assigned Identity ID: $UAI_ID"
-          echo "UAI_ID=$UAI_ID" >> $GITHUB_ENV
+          echo "User Assigned Identity ID: $UAMI_ACRPULL_ID"
+          echo "UAMI_ACRPULL_ID=$UAMI_ACRPULL_ID" >> $GITHUB_ENV
+
+      - name: Find KV Reader User Assigned Identity ID
+        env:
+          REGION_SUFFIX: ${{ vars.REGION_SUFFIX }}
+          ENVIRONMENT_SUFFIX: ${{ vars.ENVIRONMENT_SUFFIX }}
+        run: |
+          UAI_NAME="uami-kv-reader-tewheke-${ENVIRONMENT_SUFFIX}-${REGION_SUFFIX}"
+          echo "Looking for User Assigned Identity: $UAI_NAME"
+
+          # Fetch the UAI ID
+          UAMI_KVREAD_ID=$(az identity list --query "[?name=='${UAI_NAME}'].id" -o tsv)
+
+          if [ -z "$UAMI_KVREAD_ID" ]; then
+            echo "No User Assigned Identity found with name $UAI_NAME"
+            exit 1
+          fi
+
+          echo "User Assigned Identity ID: $UAMI_KVREAD_ID"
+          echo "UAMI_KVREAD_ID=$UAMI_KVREAD_ID" >> $GITHUB_ENV
 
       - name: Create Azure Container App Job
         run: |
@@ -104,5 +123,5 @@ jobs:
             --secrets "app-key=$GITHUB_APP_KEY" \
             --env-vars "GITHUB_APP_ID=$APP_ID" "GITHUB_APP_KEY=secretref:app-key" "ORG_NAME=$REPO_OWNER" "GH_URL=https://github.com/$REPO_OWNER" "REGISTRATION_TOKEN_API_URL=https://api.github.com/repos/$REPO_OWNER/actions/runners/registration-token" \
             --registry-server "$CONTAINER_REGISTRY_NAME.azurecr.io" \
-            --registry-identity "$UAI_ID" \
-            --mi-user-assigned "$UAI_ID"
+            --registry-identity "$UAMI_ACRPULL_ID" \
+            --mi-user-assigned "$UAMI_KVREAD_ID"
