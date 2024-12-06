@@ -19,14 +19,6 @@ on:
         description: "Name for the tfstate blob to create for this resource"
         required: true
         type: string
-      region:
-        description: "Azure Region"
-        required: true
-        type: string
-      region_suffix:
-        description: "Region Suffix"
-        required: true
-        type: string
 
 jobs:
   deployment:
@@ -40,8 +32,8 @@ jobs:
       # Set TF vars from workflow inputs
       - name: Set Environment Variables
         run: |
-          echo "TF_VAR_location=${{ inputs.region }}" >> $GITHUB_ENV
-          echo "TF_VAR_locationSuffix=${{ inputs.region_suffix }}" >> $GITHUB_ENV
+          echo "TF_VAR_location=${{ vars.REGION }}" >> $GITHUB_ENV
+          echo "TF_VAR_locationSuffix=${{ vars.REGION_SUFFIX }}" >> $GITHUB_ENV
           echo "TF_VAR_resourceSuffix=tewheke" >> $GITHUB_ENV
           echo "TF_VAR_environment=${{ inputs.environment }}" >> $GITHUB_ENV
 
@@ -71,8 +63,8 @@ jobs:
         uses: azure/cli@v2
         with:
           inlineScript: |
-            RESOURCE_GROUP="rg-integrationmanagement-${{ inputs.region_suffix }}"
-            STORAGE_ACCOUNT_NAME="saterraformstate${{ inputs.region_suffix }}${{ inputs.environment }}"
+            RESOURCE_GROUP="rg-integrationmanagement-${{ vars.REGION_SUFFIX }}"
+            STORAGE_ACCOUNT_NAME="saterraformstate${{ vars.REGION_SUFFIX }}${{ inputs.environment }}"
 
             key=$(az storage account keys list \
               -g $RESOURCE_GROUP \
@@ -85,7 +77,7 @@ jobs:
       - name: Terraform Init
         run: |
           terraform init \
-            -backend-config="storage_account_name=saterraformstate${{ inputs.region_suffix }}${{ inputs.environment }}" \
+            -backend-config="storage_account_name=saterraformstate${{ vars.REGION_SUFFIX }}${{ inputs.environment }}" \
             -backend-config="container_name=terraform-state" \
             -backend-config="key=${{ inputs.terraform_state_filename }}" \
             -backend-config="access_key=${TF_STORAGE_ACCOUNT_KEY}"
