@@ -66,7 +66,7 @@ jobs:
           REGION_SUFFIX: ${{ vars.REGION_SUFFIX }}
           ENVIRONMENT_SUFFIX: ${{ vars.ENVIRONMENT_SUFFIX }}
         run: |
-          UAI_NAME="acr-${REGION_SUFFIX}-${ENVIRONMENT_SUFFIX}"
+          UAI_NAME="uami-acr-pull-tewheke-${REGION_SUFFIX}-${ENVIRONMENT_SUFFIX}"
           echo "Looking for User Assigned Identity: $UAI_NAME"
 
           # Fetch the UAI ID
