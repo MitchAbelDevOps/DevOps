@@ -10,12 +10,12 @@ on:
       root_directory:
         description: "Root directory where Terraform config is located"
         required: false
-        default: "GitHubRunner/ContainerApp"
+        default: "GitHubRunner/Infrastructure"
         type: string
       sub_directory:
         description: "Sub-directory containing resource Terraform files"
         required: false
-        default: "GitHubRunner/ContainerApp"
+        default: "GitHubRunner/Infrastructure"
         type: string
       terraform_state_filename:
         description: "Name for the tfstate blob to create for this resource"
@@ -31,12 +31,12 @@ on:
       root_directory:
         description: "Root directory where Terraform config is located"
         required: false
-        default: "GitHubRunner/ContainerApp"
+        default: "GitHubRunner/Infrastructure"
         type: string
       sub_directory:
         description: "Sub-directory containing resource Terraform files"
         required: false
-        default: "GitHubRunner/ContainerApp"
+        default: "GitHubRunner/Infrastructure"
         type: string
       terraform_state_filename:
         description: "Name for the tfstate blob to create for this resource"
