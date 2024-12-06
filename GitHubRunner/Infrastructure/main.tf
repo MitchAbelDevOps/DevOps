@@ -31,7 +31,7 @@ resource "azurerm_container_registry" "container_registry" {
   location            = var.location
   resource_group_name = local.fullResourceGroupName
   sku                 = "Basic"
-  admin_enabled = true
+  admin_enabled       = true
 }
 
 // ACR Pull UAMI role assignment
@@ -44,15 +44,16 @@ resource "azurerm_role_assignment" "uami_role_assignment" {
 // Container App Environment
 resource "azurerm_container_app_environment" "container_app_environment" {
   // Change name to have 01 suffix
-  name                       = "cae-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
-  location                   = var.location
-  resource_group_name        = local.fullResourceGroupName
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.log_analytics_workspace.id
-  
+  name                               = "cae-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
+  location                           = var.location
+  resource_group_name                = local.fullResourceGroupName
+  log_analytics_workspace_id         = data.azurerm_log_analytics_workspace.log_analytics_workspace.id
+  infrastructure_subnet_id           = data.azurerm_subnet.runners_subnet.id
+  infrastructure_resource_group_name = "rg-caeinfra-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
+  internal_load_balancer_enabled     = true
+
   workload_profile {
     name                  = "Consumption"
     workload_profile_type = "Consumption"
   }
-  infrastructure_subnet_id           = data.azurerm_subnet.runners_subnet.id
-  infrastructure_resource_group_name = "rg-caeinfra-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
 }
