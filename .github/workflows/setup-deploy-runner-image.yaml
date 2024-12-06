@@ -104,5 +104,5 @@ jobs:
             --secrets "app-key=$GITHUB_APP_KEY" \
             --env-vars "GITHUB_APP_ID=$APP_ID" "GITHUB_APP_KEY=secretref:app-key" "ORG_NAME=$REPO_OWNER" "GH_URL=https://github.com/$REPO_OWNER" "REGISTRATION_TOKEN_API_URL=https://api.github.com/repos/$REPO_OWNER/actions/runners/registration-token" \
             --registry-server "$CONTAINER_REGISTRY_NAME.azurecr.io" \
-            --registry-identity "$UAI_ID"
+            --registry-identity "$UAI_ID" \
             --mi-user-assigned "$UAI_ID"
