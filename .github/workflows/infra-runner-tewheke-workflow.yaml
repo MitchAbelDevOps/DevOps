@@ -1,4 +1,4 @@
-name: "infra-cae-tewheke-workflow"
+name: "infra-runner-tewheke-workflow"
 
 on:
   workflow_call:
