@@ -61,6 +61,7 @@ jobs:
       CONTAINER_REGISTRY_NAME: "acrtewheke${{ vars.ENVIRONMENT_SUFFIX }}${{ vars.REGION_SUFFIX }}"
       CONTAINER_IMAGE_NAME: "actions-runner:latest"
       ORG: "MitchAbelDevOps"
+      #TODO get different secrets depending on current env i.e. dev, test, stg, pprod grab non-prod versions
       GITHUB_APP_KEY: ${{ secrets.SELF_HOSTED_RUNNER_APP_PRIVATE_KEY }}
       APP_ID: ${{ vars.SELF_HOSTED_RUNNER_APP_ID }}
       INSTALLATION_ID: ${{ vars.SELF_HOSTED_RUNNER_INSTALLATION_ID }}
@@ -89,22 +90,6 @@ jobs:
           echo "User Assigned Identity ID: $UAMI_ACRPULL_ID"
           echo "UAMI_ACRPULL_ID=$UAMI_ACRPULL_ID" >> $GITHUB_ENV
 
-      - name: Find KV Reader User Assigned Identity ID
-        run: |
-          UAI_NAME="uami-kv-reader-tewheke-${ENVIRONMENT_SUFFIX}-${REGION_SUFFIX}"
-          echo "Looking for User Assigned Identity: $UAI_NAME"
-
-          # Fetch the UAI ID
-          UAMI_KVREAD_ID=$(az identity list --query "[?name=='${UAI_NAME}'].id" -o tsv)
-
-          if [ -z "$UAMI_KVREAD_ID" ]; then
-            echo "No User Assigned Identity found with name $UAI_NAME"
-            exit 1
-          fi
-
-          echo "User Assigned Identity ID: $UAMI_KVREAD_ID"
-          echo "UAMI_KVREAD_ID=$UAMI_KVREAD_ID" >> $GITHUB_ENV
-
       - name: Create Azure Container App Job
         run: |
           az containerapp job create -n "$JOB_NAME" \
@@ -129,5 +114,4 @@ jobs:
             --secrets "app-key=$GITHUB_APP_KEY" \
             --env-vars "ENV=$ENV" "GITHUB_APP_ID=$APP_ID" "GITHUB_APP_KEY=secretref:app-key" "ORG_NAME=$ORG" "GH_URL=https://github.com/$ORG" "REGISTRATION_TOKEN_API_URL=https://api.github.com/repos/$ORG/actions/runners/registration-token" \
             --registry-server "$CONTAINER_REGISTRY_NAME.azurecr.io" \
-            --registry-identity "$UAMI_ACRPULL_ID" \
-            --mi-user-assigned "$UAMI_KVREAD_ID"
+            --registry-identity "$UAMI_ACRPULL_ID"
