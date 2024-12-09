@@ -86,4 +86,4 @@ fi
 
 # Configure and run the self-hosted runner
 echo "Configuring and starting the runner"
-./config.sh --url https://github.com/"${ORG_NAME}" --token "${reg_token}" --unattended --ephemeral --labels self-hosted- && ./run.sh
+./config.sh --url https://github.com/"${ORG_NAME}" --token "${reg_token}" --unattended --ephemeral --labels self-hosted-"${ENV}" && ./run.sh
