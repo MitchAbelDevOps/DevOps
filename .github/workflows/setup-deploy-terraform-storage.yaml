@@ -9,7 +9,7 @@ on:
         type: string
 
 jobs:
-  setup-terraform-storage-account:
+  deploy-terraform-storage-account:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
 

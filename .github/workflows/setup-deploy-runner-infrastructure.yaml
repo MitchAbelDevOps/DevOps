@@ -45,67 +45,14 @@ on:
         type: string
 
 jobs:
-  # Dev Environment
-  dev:
-    if: ${{ inputs.environment == 'dev' }}
+  deploy-runner-infrastructure:
     permissions:
       id-token: write # Required for OIDC authentication
       contents: read # To access repository files if needed
     uses: MitchAbelDevOps/DevOps/.github/workflows/deploy-resource.yaml@main
     with:
-      environment: "dev"
+      environment: "${{ inputs.environment }}"
       root_directory: ${{ inputs.root_directory }}
       sub_directory: ${{ inputs.sub_directory }}
       terraform_state_filename: ${{  inputs.terraform_state_filename }}
     secrets: inherit
-
-  # # Test Environment
-  # test:
-  #   if: ${{ inputs.environment == 'test' }}
-  #   permissions:
-  #     id-token: write # Required for OIDC authentication
-  #     contents: read  # To access repository files if needed
-  #   uses: MitchAbelDevOps/DevOps/.github/workflows/deploy-resource.yaml@main
-  #   with:
-  #     environment: 'test'
-  #     root_directory: ${{ inputs.root_directory }}
-  #     sub_directory: ${{ inputs.sub_directory }}
-  #     terraform_state_filename: ${{  inputs.terraform_state_filename }}
-
-  # # Staging Environment
-  # staging:
-  #   if: ${{ inputs.environment == 'stg' }}
-  #   permissions:
-  #     id-token: write # Required for OIDC authentication
-  #     contents: read  # To access repository files if needed
-  #   uses: MitchAbelDevOps/DevOps/.github/workflows/deploy-resource.yaml@main
-  #   with:
-  #     environment: 'staging'
-  #     root_directory: ${{ inputs.root_directory }}
-  #     sub_directory: ${{ inputs.sub_directory }}
-  #     terraform_state_filename: ${{  inputs.terraform_state_filename }}
-
-  # # Pre-Prod Environment
-  # pprod:
-  #   if: ${{ inputs.environment == 'pprod' }}
-  #   permissions:
-  #     id-token: write # Required for OIDC authentication
-  #     contents: read  # To access repository files if needed
-  #   uses: MitchAbelDevOps/DevOps/.github/workflows/deploy-resource.yaml@main
-  #   with:
-  #     environment: 'pprod'
-  #     root_directory: ${{ inputs.root_directory }}
-  #     sub_directory: ${{ inputs.sub_directory }}
-  #     terraform_state_filename: ${{  inputs.terraform_state_filename }}
-  # # Prod Environment
-  # prod:
-  #   if: ${{ inputs.environment == 'prod' }}
-  #   permissions:
-  #     id-token: write # Required for OIDC authentication
-  #     contents: read  # To access repository files if needed
-  #   uses: MitchAbelDevOps/DevOps/.github/workflows/deploy-resource.yaml@main
-  #   with:
-  #     environment: 'prod'
-  #     root_directory: ${{ inputs.root_directory }}
-  #     sub_directory: ${{ inputs.sub_directory }}
-  #     terraform_state_filename: ${{  inputs.terraform_state_filename }}
