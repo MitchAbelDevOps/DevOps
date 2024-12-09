@@ -2,12 +2,16 @@ name: Setup Terraform Storage Account
 
 on:
   workflow_dispatch: # Trigger manually via GitHub Actions interface
+    inputs:
+      environment:
+        description: "Deployment Environment"
+        required: true
+        type: string
 
 jobs:
   setup-terraform-storage-account:
     runs-on: ubuntu-latest
-    environment:
-      name: dev
+    environment: ${{ inputs.environment }}
 
     permissions:
       id-token: write # Required for OIDC authentication
@@ -31,7 +35,7 @@ jobs:
             REGION_SUFFIX="${{ env.REGION_SUFFIX }}"
             ENVIRONMENT_SUFFIX="${{ env.ENVIRONMENT_SUFFIX }}"
 
-            RESOURCE_GROUP="rg-integrationmanagement-${REGION_SUFFIX}"
+            RESOURCE_GROUP="rg-terraform-tewheke-${ENVIRONMENT_SUFFIX}-${REGION_SUFFIX}"
             STORAGE_ACCOUNT_NAME="samojtwwtfstate${REGION_SUFFIX}${ENVIRONMENT_SUFFIX}"
             LOCATION="${REGION}"
             SKU="Standard_LRS"
