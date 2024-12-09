@@ -1,4 +1,4 @@
-name: "infra-runner-tewheke-workflow"
+name: Setup 2 Self-Hosted GitHub Runner Infrastructure
 
 on:
   workflow_call:

@@ -1,4 +1,4 @@
-name: Setup GitHub Runner
+name: Setup 3 Self-Hosted GitHub Runner Image And Job
 
 on:
   workflow_dispatch: # Trigger manually via GitHub Actions interface
