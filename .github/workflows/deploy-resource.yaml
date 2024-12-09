@@ -68,7 +68,7 @@ jobs:
         uses: azure/cli@v2
         with:
           inlineScript: |
-            RESOURCE_GROUP="rg-deploymentinfra-${{ vars.REGION_SUFFIX }}"
+            RESOURCE_GROUP="rg-deploymentinfra-${{ inputs.environment }}-${{ vars.REGION_SUFFIX }}"
             STORAGE_ACCOUNT_NAME="samojtwtfstate${{ inputs.environment }}${{ vars.REGION_SUFFIX }}"
 
             key=$(az storage account keys list \
