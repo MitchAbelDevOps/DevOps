@@ -65,8 +65,8 @@ jobs:
       # Retrieve Terraform State Storage Account key
       - name: Get Terraform Storage Account Key
         run: |
-          RESOURCE_GROUP="rg-integrationmanagement-${{ vars.REGION_SUFFIX }}"
-          STORAGE_ACCOUNT_NAME="samojtwtfstate${{ vars.REGION_SUFFIX }}${{ inputs.environment }}"
+          RESOURCE_GROUP="rg-deploymentinfra-tewheke-${{ inputs.environment }}-${{ vars.REGION_SUFFIX }}"
+          STORAGE_ACCOUNT_NAME="samojtwtfstate${{ inputs.environment }}${{ vars.REGION_SUFFIX }}"
 
           key=$(az storage account keys list \
             -g $RESOURCE_GROUP \
