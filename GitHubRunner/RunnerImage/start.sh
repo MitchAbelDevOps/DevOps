@@ -4,6 +4,7 @@ set -o pipefail
 
 app_id=$GITHUB_APP_ID
 pem=$(echo -e "${GITHUB_APP_KEY}")
+env=$ENV
 
 now=$(date +%s)
 iat=$((${now} - 60)) # Issues 60 seconds in the past
@@ -85,4 +86,4 @@ fi
 
 # Configure and run the self-hosted runner
 echo "Configuring and starting the runner"
-./config.sh --url https://github.com/"${ORG_NAME}" --token "${reg_token}" --unattended --ephemeral && ./run.sh
+./config.sh --url https://github.com/"${ORG_NAME}" --token "${reg_token}" --unattended --ephemeral --labels self-hosted- && ./run.sh
