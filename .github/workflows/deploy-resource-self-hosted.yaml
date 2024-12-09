@@ -64,7 +64,7 @@ jobs:
       - name: Get Terraform Storage Account Key
         run: |
           RESOURCE_GROUP="rg-integrationmanagement-${{ vars.REGION_SUFFIX }}"
-          STORAGE_ACCOUNT_NAME="saterraformstate${{ vars.REGION_SUFFIX }}${{ inputs.environment }}"
+          STORAGE_ACCOUNT_NAME="samojtwtfstate${{ vars.REGION_SUFFIX }}${{ inputs.environment }}"
 
           key=$(az storage account keys list \
             -g $RESOURCE_GROUP \
@@ -77,7 +77,7 @@ jobs:
       - name: Terraform Init
         run: |
           terraform init \
-            -backend-config="storage_account_name=saterraformstate${{ vars.REGION_SUFFIX }}${{ inputs.environment }}" \
+            -backend-config="storage_account_name=samojtwtfstate${{ vars.REGION_SUFFIX }}${{ inputs.environment }}" \
             -backend-config="container_name=terraform-state" \
             -backend-config="key=${{ inputs.terraform_state_filename }}" \
             -backend-config="access_key=${TF_STORAGE_ACCOUNT_KEY}"

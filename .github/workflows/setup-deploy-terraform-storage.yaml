@@ -36,7 +36,7 @@ jobs:
             ENVIRONMENT_SUFFIX="${{ vars.ENVIRONMENT_SUFFIX }}"
 
             RESOURCE_GROUP="rg-deploymentinfra-tewheke-${ENVIRONMENT_SUFFIX}-${REGION_SUFFIX}"
-            STORAGE_ACCOUNT_NAME="samojtwwtfstate${REGION_SUFFIX}${ENVIRONMENT_SUFFIX}"
+            STORAGE_ACCOUNT_NAME="samojtwtfstate${REGION_SUFFIX}${ENVIRONMENT_SUFFIX}"
             LOCATION="${REGION}"
             SKU="Standard_LRS"
             CONTAINER_NAME="terraform-state"
