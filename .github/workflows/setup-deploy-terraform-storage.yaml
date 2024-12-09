@@ -31,9 +31,9 @@ jobs:
         uses: azure/cli@v1
         with:
           inlineScript: |
-            REGION="${{ env.REGION }}"
-            REGION_SUFFIX="${{ env.REGION_SUFFIX }}"
-            ENVIRONMENT_SUFFIX="${{ env.ENVIRONMENT_SUFFIX }}"
+            REGION="${{ vars.REGION }}"
+            REGION_SUFFIX="${{ vars.REGION_SUFFIX }}"
+            ENVIRONMENT_SUFFIX="${{ vars.ENVIRONMENT_SUFFIX }}"
 
             RESOURCE_GROUP="rg-deploymentinfra-tewheke-${ENVIRONMENT_SUFFIX}-${REGION_SUFFIX}"
             STORAGE_ACCOUNT_NAME="samojtwwtfstate${REGION_SUFFIX}${ENVIRONMENT_SUFFIX}"
