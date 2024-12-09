@@ -36,7 +36,7 @@ New Resource Variables
 variable "resourceGroupName" {
   type        = string
   description = "The name of the resource group"
-  default     = "rg-shared"
+  default     = "rg-deploymentinfra"
 }
 
 locals {
