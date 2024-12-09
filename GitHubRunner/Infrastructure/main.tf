@@ -3,7 +3,7 @@ Existing Resources
 ***************************************************/
 data "azurerm_log_analytics_workspace" "log_analytics_workspace" {
   name                = "log-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}-01"
-  resource_group_name = local.fullResourceGroupName
+  resource_group_name = "${var.sharedResourceGroupName}-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
 }
 
 data "azurerm_virtual_network" "tewheke_vnet" {
@@ -19,7 +19,7 @@ data "azurerm_subnet" "runners_subnet" {
 
 data "azurerm_user_assigned_identity" "acr_pull" {
   name                = "uami-acr-pull-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
-  resource_group_name = local.fullResourceGroupName
+  resource_group_name = "${var.sharedResourceGroupName}-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
 }
 
 /**************************************************

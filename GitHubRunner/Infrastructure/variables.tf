@@ -30,6 +30,12 @@ variable "networkingResourceGroupName" {
   default     = "rg-networking"
 }
 
+variable "sharedResourceGroupName" {
+  type        = string
+  description = "The name of the networking resource group"
+  default     = "rg-shared"
+}
+
 /**************************************************
 New Resource Variables
 ***************************************************/
