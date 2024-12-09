@@ -3,7 +3,7 @@ Existing Resources
 ***************************************************/
 data "azurerm_log_analytics_workspace" "log_analytics_workspace" {
   name                = "log-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}-01"
-  resource_group_name = "${var.sharedResourceGroupName}-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
+  resource_group_name = local.fullResourceGroupName
 }
 
 data "azurerm_virtual_network" "tewheke_vnet" {
@@ -19,7 +19,7 @@ data "azurerm_subnet" "runners_subnet" {
 
 data "azurerm_user_assigned_identity" "acr_pull" {
   name                = "uami-acr-pull-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
-  resource_group_name = "${var.sharedResourceGroupName}-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
+  resource_group_name = local.fullResourceGroupName
 }
 
 /**************************************************
@@ -49,7 +49,7 @@ resource "azurerm_container_app_environment" "container_app_environment" {
   resource_group_name                = local.fullResourceGroupName
   log_analytics_workspace_id         = data.azurerm_log_analytics_workspace.log_analytics_workspace.id
   infrastructure_subnet_id           = data.azurerm_subnet.runners_subnet.id
-  infrastructure_resource_group_name = local.fullResourceGroupName
+  infrastructure_resource_group_name = "rg-caeinfra-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
   internal_load_balancer_enabled     = true
 
   workload_profile {
