@@ -49,7 +49,7 @@ resource "azurerm_container_app_environment" "container_app_environment" {
   resource_group_name                = local.fullResourceGroupName
   log_analytics_workspace_id         = data.azurerm_log_analytics_workspace.log_analytics_workspace.id
   infrastructure_subnet_id           = data.azurerm_subnet.runners_subnet.id
-  infrastructure_resource_group_name = "rg-caeinfra-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
+  infrastructure_resource_group_name = local.fullResourceGroupName
   internal_load_balancer_enabled     = true
 
   workload_profile {
