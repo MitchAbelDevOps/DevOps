@@ -1,0 +1,47 @@
+name: Setup 4 Terraform Storage Account Lockdown
+
+on:
+  workflow_dispatch: # Trigger manually via GitHub Actions interface
+    inputs:
+      environment:
+        description: "Deployment Environment"
+        required: true
+        type: string
+
+jobs:
+  deploy-terraform-storage-account:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    permissions:
+      id-token: write # Required for OIDC authentication
+      contents: read # To access repository files if needed
+
+    steps:
+      # Step 1: Login to Azure using OIDC
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Step 2: Update the storage account network rules using Azure CLI
+      - name: Update Storage Account
+        uses: azure/cli@v1
+        with:
+          inlineScript: |
+            REGION="${{ vars.REGION }}"
+            REGION_SUFFIX="${{ vars.REGION_SUFFIX }}"
+            ENVIRONMENT_SUFFIX="${{ vars.ENVIRONMENT_SUFFIX }}"
+
+            RESOURCE_GROUP="rg-deploymentinfra-tewheke-${ENVIRONMENT_SUFFIX}-${REGION_SUFFIX}"
+            STORAGE_ACCOUNT_NAME="samojtwtfstate${ENVIRONMENT_SUFFIX}${REGION_SUFFIX}"
+            VNET_NAME="vnet-tewheke-${ENVIRONMENT_SUFFIX}-${REGION_SUFFIX}-01"
+            SUBNET_NAME="snet-tewheke-${ENVIRONMENT_SUFFIX}-runners-${REGION_SUFFIX}-01"
+
+            az storage account network-rule add \
+              --account-name $STORAGE_ACCOUNT_NAME \
+              --resource-group $RESOURCE_GROUP \
+              --vnet-name $VNET_NAME \
+              --subnet-name $SUBNET_NAME
