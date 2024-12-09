@@ -107,7 +107,7 @@ jobs:
             --scale-rule-name "github-runner" \
             --scale-rule-type "github-runner" \
             --scale-rule-metadata "githubAPIURL=https://api.github.com" \
-            "owner=$ORG" "runnerScope=org" "repos=DevOps,Connectivity,IntegrationShared" "targetWorkflowQueueLength=1" "applicationID=$APP_ID" "installationID=$INSTALLATION_ID"\
+            "owner=$ORG" "runnerScope=org" "labels=self-hosted-$ENV" "targetWorkflowQueueLength=1" "applicationID=$APP_ID" "installationID=$INSTALLATION_ID"\
             --scale-rule-auth "appKey=app-key" \
             --cpu "2.0" \
             --memory "4Gi" \
