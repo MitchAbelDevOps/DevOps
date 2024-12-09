@@ -2,27 +2,25 @@ name: Setup GitHub Runner
 
 on:
   workflow_dispatch: # Trigger manually via GitHub Actions interface
-
-env:
-  JOB_NAME: "tewheke-runner"
-  RESOURCE_GROUP: "rg-shared-tewheke-dev-aue"
-  ENVIRONMENT: "cae-tewheke-dev-aue"
-  CONTAINER_REGISTRY_NAME: "acrtewhekedevaue"
-  CONTAINER_IMAGE_NAME: "actions-runner:latest"
-  REPO_OWNER: "MitchAbelDevOps"
-  GITHUB_APP_KEY: ${{ secrets.SELF_HOSTED_RUNNER_APP_PRIVATE_KEY }}
-  APP_ID: ${{ vars.SELF_HOSTED_RUNNER_APP_ID }}
-  INSTALLATION_ID: ${{ vars.SELF_HOSTED_RUNNER_INSTALLATION_ID }}
+    inputs:
+      environment:
+        description: "Deployment Environment"
+        required: true
+        type: string
 
 jobs:
   deploy-runner-image:
     runs-on: ubuntu-latest
-    environment:
-      name: dev
+    environment: ${{ inputs.environment }}
 
     permissions:
       id-token: write # Required for OIDC authentication
       contents: read # To access repository files if needed
+
+    env:
+      CONTAINER_REGISTRY_NAME: "acrtewheke${{ vars.ENVIRONMENT_SUFFIX }}${{ vars.REGION_SUFFIX }}"
+      RESOURCE_GROUP: "rg-deploymentinfra-tewheke-${{ vars.ENVIRONMENT_SUFFIX }}-${{ vars.REGION_SUFFIX }}"
+      CONTAINER_IMAGE_NAME: "actions-runner:latest"
 
     steps:
       - name: Checkout Repo
@@ -53,6 +51,20 @@ jobs:
       id-token: write # Required for OIDC authentication
       contents: read # To access repository files if needed
 
+    env:
+      REGION_SUFFIX: ${{ vars.REGION_SUFFIX }}
+      ENVIRONMENT_SUFFIX: ${{ vars.ENVIRONMENT_SUFFIX }}
+      ENV: ${{ inputs.environment }}
+      JOB_NAME: "tewheke-runner"
+      RESOURCE_GROUP: "rg-deploymentinfra-tewheke-${{ vars.ENVIRONMENT_SUFFIX }}-${{ vars.REGION_SUFFIX }}"
+      CONTAINER_ENVIRONMENT: "cae-tewheke-${{ vars.ENVIRONMENT_SUFFIX }}-${{ vars.REGION_SUFFIX }}"
+      CONTAINER_REGISTRY_NAME: "acrtewheke${{ vars.ENVIRONMENT_SUFFIX }}${{ vars.REGION_SUFFIX }}"
+      CONTAINER_IMAGE_NAME: "actions-runner:latest"
+      ORG: "MitchAbelDevOps"
+      GITHUB_APP_KEY: ${{ secrets.SELF_HOSTED_RUNNER_APP_PRIVATE_KEY }}
+      APP_ID: ${{ vars.SELF_HOSTED_RUNNER_APP_ID }}
+      INSTALLATION_ID: ${{ vars.SELF_HOSTED_RUNNER_INSTALLATION_ID }}
+
     steps:
       - name: Azure Login
         uses: azure/login@v1
@@ -62,9 +74,6 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Find ACR Pull User Assigned Identity ID
-        env:
-          REGION_SUFFIX: ${{ vars.REGION_SUFFIX }}
-          ENVIRONMENT_SUFFIX: ${{ vars.ENVIRONMENT_SUFFIX }}
         run: |
           UAI_NAME="uami-acr-pull-tewheke-${ENVIRONMENT_SUFFIX}-${REGION_SUFFIX}"
           echo "Looking for User Assigned Identity: $UAI_NAME"
@@ -81,9 +90,6 @@ jobs:
           echo "UAMI_ACRPULL_ID=$UAMI_ACRPULL_ID" >> $GITHUB_ENV
 
       - name: Find KV Reader User Assigned Identity ID
-        env:
-          REGION_SUFFIX: ${{ vars.REGION_SUFFIX }}
-          ENVIRONMENT_SUFFIX: ${{ vars.ENVIRONMENT_SUFFIX }}
         run: |
           UAI_NAME="uami-kv-reader-tewheke-${ENVIRONMENT_SUFFIX}-${REGION_SUFFIX}"
           echo "Looking for User Assigned Identity: $UAI_NAME"
@@ -103,7 +109,7 @@ jobs:
         run: |
           az containerapp job create -n "$JOB_NAME" \
             -g "$RESOURCE_GROUP" \
-            --environment "$ENVIRONMENT" \
+            --environment "$CONTAINER_ENVIRONMENT" \
             --trigger-type Event \
             --replica-timeout 1800 \
             --replica-retry-limit 0 \
@@ -116,12 +122,12 @@ jobs:
             --scale-rule-name "github-runner" \
             --scale-rule-type "github-runner" \
             --scale-rule-metadata "githubAPIURL=https://api.github.com" \
-            "owner=$REPO_OWNER" "runnerScope=org" "repos=DevOps,Connectivity,IntegrationShared" "targetWorkflowQueueLength=1" "applicationID=$APP_ID" "installationID=$INSTALLATION_ID"\
+            "owner=$ORG" "runnerScope=org" "repos=DevOps,Connectivity,IntegrationShared" "targetWorkflowQueueLength=1" "applicationID=$APP_ID" "installationID=$INSTALLATION_ID"\
             --scale-rule-auth "appKey=app-key" \
             --cpu "2.0" \
             --memory "4Gi" \
             --secrets "app-key=$GITHUB_APP_KEY" \
-            --env-vars "GITHUB_APP_ID=$APP_ID" "GITHUB_APP_KEY=secretref:app-key" "ORG_NAME=$REPO_OWNER" "GH_URL=https://github.com/$REPO_OWNER" "REGISTRATION_TOKEN_API_URL=https://api.github.com/repos/$REPO_OWNER/actions/runners/registration-token" \
+            --env-vars "ENV=$ENV" "GITHUB_APP_ID=$APP_ID" "GITHUB_APP_KEY=secretref:app-key" "ORG_NAME=$ORG" "GH_URL=https://github.com/$ORG" "REGISTRATION_TOKEN_API_URL=https://api.github.com/repos/$ORG/actions/runners/registration-token" \
             --registry-server "$CONTAINER_REGISTRY_NAME.azurecr.io" \
             --registry-identity "$UAMI_ACRPULL_ID" \
             --mi-user-assigned "$UAMI_KVREAD_ID"
