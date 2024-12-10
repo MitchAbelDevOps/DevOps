@@ -37,11 +37,20 @@ jobs:
 
             RESOURCE_GROUP="rg-deploymentinfra-tewheke-${ENVIRONMENT_SUFFIX}-${REGION_SUFFIX}"
             STORAGE_ACCOUNT_NAME="samojtwtfstate${ENVIRONMENT_SUFFIX}${REGION_SUFFIX}"
+            NETWORKING_RESOURCE_GROUP="rg-networking-tewheke-${ENVIRONMENT_SUFFIX}-${REGION_SUFFIX}"
             VNET_NAME="vnet-tewheke-${ENVIRONMENT_SUFFIX}-${REGION_SUFFIX}-01"
             SUBNET_NAME="snet-tewheke-${ENVIRONMENT_SUFFIX}-runners-${REGION_SUFFIX}-01"
 
+            # Get the subnet ID
+            SUBNET_ID=$(az network vnet subnet show \
+              --resource-group $NETWORKING_RESOURCE_GROUP \
+              --vnet-name $VNET_NAME \
+              --name $SUBNET_NAME \
+              --query id \
+              --output tsv)
+
+            # Add the subnet network rule to the storage account
             az storage account network-rule add \
               --account-name $STORAGE_ACCOUNT_NAME \
               --resource-group $RESOURCE_GROUP \
-              --vnet-name $VNET_NAME \
-              --subnet $SUBNET_NAME
+              --subnet $SUBNET_ID
