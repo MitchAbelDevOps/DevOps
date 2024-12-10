@@ -7,10 +7,15 @@ on:
         description: "Deployment Environment"
         required: true
         type: string
+      runner:
+        description: "Type of runner to use for deployment. Defaults to GitHub hosted Linux"
+        required: false
+        type: string
+        default: "ubuntu-latest"
 
 jobs:
   deploy-runner-image:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner }}
     environment: ${{ inputs.environment }}
 
     permissions:
