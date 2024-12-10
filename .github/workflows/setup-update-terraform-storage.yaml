@@ -49,6 +49,11 @@ jobs:
               --query id \
               --output tsv)
 
+            az storage account update \
+              --default-action Deny \
+              --name $STORAGE_ACCOUNT_NAME \
+              --resource-group $RESOURCE_GROUP
+
             # Add the subnet network rule to the storage account
             az storage account network-rule add \
               --account-name $STORAGE_ACCOUNT_NAME \
