@@ -103,7 +103,7 @@ jobs:
             --image "$CONTAINER_REGISTRY_NAME.azurecr.io/$CONTAINER_IMAGE_NAME" \
             --min-executions 0 \
             --max-executions 10 \
-            --polling-interval 30 \
+            --polling-interval 15 \
             --scale-rule-name "github-runner" \
             --scale-rule-type "github-runner" \
             --scale-rule-metadata "githubAPIURL=https://api.github.com" \
