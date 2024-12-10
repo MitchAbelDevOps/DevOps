@@ -44,4 +44,4 @@ jobs:
               --account-name $STORAGE_ACCOUNT_NAME \
               --resource-group $RESOURCE_GROUP \
               --vnet-name $VNET_NAME \
-              --subnet-name $SUBNET_NAME
+              --subnet $SUBNET_NAME
