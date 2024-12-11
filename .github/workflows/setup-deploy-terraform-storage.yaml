@@ -18,55 +18,51 @@ jobs:
       contents: read # To access repository files if needed
 
     steps:
-      # Step 1: Check out the repository
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      # Step 1: Login to Azure using OIDC
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      # Step 2: Set Azure account for OIDC authentication
-      - name: Authenticate with Azure using OIDC
-        env:
-          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        run: |
-          echo "Configuring Azure CLI to use OIDC..."
-          az account set --subscription $AZURE_SUBSCRIPTION_ID
-
-      # Step 3: Deploy the storage account using Azure CLI
+      # Step 2: Deploy the storage account using Azure CLI
       - name: Deploy Storage Account
-        run: |
-          REGION="${{ vars.REGION }}"
-          REGION_SUFFIX="${{ vars.REGION_SUFFIX }}"
-          ENVIRONMENT_SUFFIX="${{ vars.ENVIRONMENT_SUFFIX }}"
+        uses: azure/cli@v1
+        with:
+          inlineScript: |
+            REGION="${{ vars.REGION }}"
+            REGION_SUFFIX="${{ vars.REGION_SUFFIX }}"
+            ENVIRONMENT_SUFFIX="${{ vars.ENVIRONMENT_SUFFIX }}"
 
-          RESOURCE_GROUP="rg-deploymentinfra-tewheke-${ENVIRONMENT_SUFFIX}-${REGION_SUFFIX}"
-          STORAGE_ACCOUNT_NAME="samojtwtfstate${ENVIRONMENT_SUFFIX}${REGION_SUFFIX}"
-          LOCATION="${REGION}"
-          SKU="Standard_LRS"
-          CONTAINER_NAME="terraform-state"
+            RESOURCE_GROUP="rg-deploymentinfra-tewheke-${ENVIRONMENT_SUFFIX}-${REGION_SUFFIX}"
+            STORAGE_ACCOUNT_NAME="samojtwtfstate${ENVIRONMENT_SUFFIX}${REGION_SUFFIX}"
+            LOCATION="${REGION}"
+            SKU="Standard_LRS"
+            CONTAINER_NAME="terraform-state"
 
-          echo "Deploying to Resource Group: $RESOURCE_GROUP"
-          echo "Using Storage Account Name: $STORAGE_ACCOUNT_NAME"
+            echo "Deploying to Resource Group: $RESOURCE_GROUP"
+            echo "Using Storage Account Name: $STORAGE_ACCOUNT_NAME"
 
-          # Create the resource group if it doesn't exist
-          az group create --name $RESOURCE_GROUP --location $LOCATION
+            # Create the resource group if it doesn't exist
+            az group create --name $RESOURCE_GROUP --location $LOCATION
 
-          # Create the storage account
-          az storage account create \
-            --name $STORAGE_ACCOUNT_NAME \
-            --resource-group $RESOURCE_GROUP \
-            --location $LOCATION \
-            --sku $SKU \
-            --kind StorageV2
+            # Create the storage account
+            az storage account create \
+              --name $STORAGE_ACCOUNT_NAME \
+              --resource-group $RESOURCE_GROUP \
+              --location $LOCATION \
+              --sku $SKU \
+              --kind StorageV2
 
-          # Retrieve the storage account key
-          ACCOUNT_KEY=$(az storage account keys list \
-            --resource-group $RESOURCE_GROUP \
-            --account-name $STORAGE_ACCOUNT_NAME \
-            --query "[0].value" -o tsv)
+            # Retrieve the storage account key
+            ACCOUNT_KEY=$(az storage account keys list \
+              --resource-group $RESOURCE_GROUP \
+              --account-name $STORAGE_ACCOUNT_NAME \
+              --query "[0].value" -o tsv)
 
-          # Create the blob container
-          az storage container create \
-            --name $CONTAINER_NAME \
-            --account-name $STORAGE_ACCOUNT_NAME \
-            --account-key $ACCOUNT_KEY
+            # Create the blob container
+            az storage container create \
+              --name $CONTAINER_NAME \
+              --account-name $STORAGE_ACCOUNT_NAME \
+              --account-key $ACCOUNT_KEY
