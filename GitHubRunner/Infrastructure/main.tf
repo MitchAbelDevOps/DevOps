@@ -2,7 +2,7 @@
 Existing Resources
 ***************************************************/
 // NOTE: Need the VNET set up first before bootstrapping can start
-data "azurerm_virtual_network" "tewheke_vnet" {
+data "azurerm_virtual_network" "mitchtest_vnet" {
   name                = "vnet-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}-01"
   resource_group_name = "${var.networkingResourceGroupName}-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
 }
@@ -10,7 +10,7 @@ data "azurerm_virtual_network" "tewheke_vnet" {
 data "azurerm_subnet" "runners_subnet" {
   name                 = "snet-${var.resourceSuffix}-${var.environment}-runners-${var.locationSuffix}-01"
   resource_group_name  = "${var.networkingResourceGroupName}-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
-  virtual_network_name = data.azurerm_virtual_network.tewheke_vnet.name
+  virtual_network_name = data.azurerm_virtual_network.mitchtest_vnet.name
 }
 
 /**************************************************

@@ -23,8 +23,8 @@ jobs:
       contents: read # To access repository files if needed
 
     env:
-      CONTAINER_REGISTRY_NAME: "acrtewheke${{ vars.ENVIRONMENT_SUFFIX }}${{ vars.REGION_SUFFIX }}"
-      RESOURCE_GROUP: "rg-deploymentinfra-tewheke-${{ vars.ENVIRONMENT_SUFFIX }}-${{ vars.REGION_SUFFIX }}"
+      CONTAINER_REGISTRY_NAME: "acrmitchtest${{ vars.ENVIRONMENT_SUFFIX }}${{ vars.REGION_SUFFIX }}"
+      RESOURCE_GROUP: "rg-deploymentinfra-mitchtest-${{ vars.ENVIRONMENT_SUFFIX }}-${{ vars.REGION_SUFFIX }}"
       CONTAINER_IMAGE_NAME: "actions-runner:latest"
 
     steps:
@@ -60,10 +60,10 @@ jobs:
       REGION_SUFFIX: ${{ vars.REGION_SUFFIX }}
       ENVIRONMENT_SUFFIX: ${{ vars.ENVIRONMENT_SUFFIX }}
       ENV: ${{ inputs.environment }}
-      JOB_NAME: "tewheke-runner"
-      RESOURCE_GROUP: "rg-deploymentinfra-tewheke-${{ vars.ENVIRONMENT_SUFFIX }}-${{ vars.REGION_SUFFIX }}"
-      CONTAINER_ENVIRONMENT: "cae-tewheke-${{ vars.ENVIRONMENT_SUFFIX }}-${{ vars.REGION_SUFFIX }}"
-      CONTAINER_REGISTRY_NAME: "acrtewheke${{ vars.ENVIRONMENT_SUFFIX }}${{ vars.REGION_SUFFIX }}"
+      JOB_NAME: "mitchtest-runner"
+      RESOURCE_GROUP: "rg-deploymentinfra-mitchtest-${{ vars.ENVIRONMENT_SUFFIX }}-${{ vars.REGION_SUFFIX }}"
+      CONTAINER_ENVIRONMENT: "cae-mitchtest-${{ vars.ENVIRONMENT_SUFFIX }}-${{ vars.REGION_SUFFIX }}"
+      CONTAINER_REGISTRY_NAME: "acrmitchtest${{ vars.ENVIRONMENT_SUFFIX }}${{ vars.REGION_SUFFIX }}"
       CONTAINER_IMAGE_NAME: "actions-runner:latest"
       ORG: "MitchAbelDevOps"
       #TODO get different secrets depending on current env i.e. dev, test, stg, pprod grab non-prod versions
@@ -81,7 +81,7 @@ jobs:
 
       - name: Find ACR Pull User Assigned Identity ID
         run: |
-          UAI_NAME="uami-acr-pull-tewheke-${ENVIRONMENT_SUFFIX}-${REGION_SUFFIX}"
+          UAI_NAME="uami-acr-pull-mitchtest-${ENVIRONMENT_SUFFIX}-${REGION_SUFFIX}"
           echo "Looking for User Assigned Identity: $UAI_NAME"
 
           # Fetch the UAI ID
