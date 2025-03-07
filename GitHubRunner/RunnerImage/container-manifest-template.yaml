@@ -1,0 +1,58 @@
+apiVersion: 2019-12-01
+location: $REGION
+name: mitchtest-runner-group
+identity:
+  type: UserAssigned
+  userAssignedIdentities: $UAMI_ACRPULL_ID
+properties:
+  containers:
+  - name: mitchtest-runner-01
+    properties:
+      image: mcr.microsoft.com/azuredocs/aci-helloworld:latest
+      resources:
+        requests:
+          cpu: 1
+          memoryInGb: 1.5
+      environmentVariables:
+      - name: INSTANCE
+        value: 01
+      - name: ENV
+        value: $ENV
+      - name: GITHUB_APP_ID
+        value: $GITHUB_APP_ID
+      - name: ORG_NAME
+        value: $ORG
+      - name: GH_URL
+        value: https://github.com/$ORG
+      - name: REGISTRATION_TOKEN_API_URL
+        value: https://api.github.com/repos/$ORG/actions/runners/registration-token
+      - name: GITHUB_APP_KEY
+        secureValue: $GITHUB_APP_KEY
+  - name: mitchtest-runner-02
+    properties:
+      image: mcr.microsoft.com/azuredocs/aci-tutorial-sidecar
+      resources:
+        requests:
+          cpu: 1
+          memoryInGb: 1.5
+      environmentVariables:
+      - name: INSTANCE
+        value: 02
+      - name: ENV
+        value: $ENV
+      - name: GITHUB_APP_ID
+        value: $GITHUB_APP_ID
+      - name: ORG_NAME
+        value: $ORG
+      - name: GH_URL
+        value: https://github.com/$ORG
+      - name: REGISTRATION_TOKEN_API_URL
+        value: https://api.github.com/repos/$ORG/actions/runners/registration-token
+      - name: GITHUB_APP_KEY
+        secureValue: $GITHUB_APP_KEY
+  osType: Linux
+  restartPolicy: Never
+  imageRegistryCredentials:
+  - server: "$CONTAINER_REGISTRY_NAME.azurecr.io"
+    identity: "$UAMI_ACRPULL_ID"
+type: Microsoft.ContainerInstance/containerGroups

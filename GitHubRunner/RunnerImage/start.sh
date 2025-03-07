@@ -89,7 +89,7 @@ echo "Configuring and starting the runner"
 ./config.sh --url https://github.com/"${ORG_NAME}" \
             --token "${reg_token}" \
             --unattended \
-            --name "Mitchtest-Runner-01" \
+            --name "Mitchtest-Runner-${INSTANCE}" \
             --labels self-hosted-"${ENV}"
 
 ./run.sh

@@ -58,6 +58,7 @@ jobs:
 
     env:
       REGION_SUFFIX: ${{ vars.REGION_SUFFIX }}
+      REGION: ${{ vars.REGION }}
       ENVIRONMENT_SUFFIX: ${{ vars.ENVIRONMENT_SUFFIX }}
       ENV: ${{ inputs.environment }}
       RESOURCE_GROUP: "rg-deploymentinfra-mitchtest-${{ vars.ENVIRONMENT_SUFFIX }}-${{ vars.REGION_SUFFIX }}"
@@ -94,22 +95,26 @@ jobs:
 
       - name: Deploy to Azure Container Instance (ACI)
         run: |
-          az container create \
-            --name "$CONTAINER_NAME" \
-            --resource-group "$RESOURCE_GROUP" \
-            --assign-identity "$UAMI_ACRPULL_ID" \
-            --image "$CONTAINER_REGISTRY_NAME.azurecr.io/$CONTAINER_IMAGE_NAME" \
-            --cpu 2 \
-            --memory 4 \
-            --os-type "Linux" \
-            --restart-policy Never \
-            --registry-login-server "$CONTAINER_REGISTRY_NAME.azurecr.io" \
-            --acr-identity "$UAMI_ACRPULL_ID" \
-            --environment-variables \
-              "ENV=$ENV" \
-              "GITHUB_APP_ID=$APP_ID" \
-              "ORG_NAME=$ORG" \
-              "GH_URL=https://github.com/$ORG" \
-              "REGISTRATION_TOKEN_API_URL=https://api.github.com/repos/$ORG/actions/runners/registration-token" \
-            --secure-environment-variables \
-              "GITHUB_APP_KEY=$GITHUB_APP_KEY"
+          envsubt < GitHubRunner/RunnerImage/container-manifest-template.yaml > GitHubRunner/RunnerImage/container-manifest.yaml
+
+          az container create --resource-group "$RESOURCE_GROUP" --file GitHubRunner/RunnerImage/container-manifest.yaml
+
+          # az container create \
+          #   --name "$CONTAINER_NAME" \
+          #   --resource-group "$RESOURCE_GROUP" \
+          #   --assign-identity "$UAMI_ACRPULL_ID" \
+          #   --image "$CONTAINER_REGISTRY_NAME.azurecr.io/$CONTAINER_IMAGE_NAME" \
+          #   --cpu 2 \
+          #   --memory 4 \
+          #   --os-type "Linux" \
+          #   --restart-policy Never \
+          #   --registry-login-server "$CONTAINER_REGISTRY_NAME.azurecr.io" \
+          #   --acr-identity "$UAMI_ACRPULL_ID" \
+          #   --environment-variables \
+          #     "ENV=$ENV" \
+          #     "GITHUB_APP_ID=$APP_ID" \
+          #     "ORG_NAME=$ORG" \
+          #     "GH_URL=https://github.com/$ORG" \
+          #     "REGISTRATION_TOKEN_API_URL=https://api.github.com/repos/$ORG/actions/runners/registration-token" \
+          #   --secure-environment-variables \
+          #     "GITHUB_APP_KEY=$GITHUB_APP_KEY"
