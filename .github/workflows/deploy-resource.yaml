@@ -39,7 +39,7 @@ jobs:
         run: |
           echo "TF_VAR_location=${{ vars.REGION }}" >> $GITHUB_ENV
           echo "TF_VAR_locationSuffix=${{ vars.REGION_SUFFIX }}" >> $GITHUB_ENV
-          echo "TF_VAR_resourceSuffix=tewheke" >> $GITHUB_ENV
+          echo "TF_VAR_resourceSuffix=mitchtest" >> $GITHUB_ENV
           echo "TF_VAR_environment=${{ inputs.environment }}" >> $GITHUB_ENV
 
       # Copy Resource Specific Files to Root Directory
@@ -65,7 +65,7 @@ jobs:
       # Retrieve Terraform State Storage Account key
       - name: Get Terraform Storage Account Key
         run: |
-          RESOURCE_GROUP="rg-deploymentinfra-tewheke-${{ inputs.environment }}-${{ vars.REGION_SUFFIX }}"
+          RESOURCE_GROUP="rg-deploymentinfra-mitchtest-${{ inputs.environment }}-${{ vars.REGION_SUFFIX }}"
           STORAGE_ACCOUNT_NAME="samojtwtfstate${{ inputs.environment }}${{ vars.REGION_SUFFIX }}"
 
           key=$(az storage account keys list \

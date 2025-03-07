@@ -20,7 +20,7 @@ on:
       terraform_state_filename:
         description: "Name for the tfstate blob to create for this resource"
         required: false
-        default: "cae-tewheke.tfstate"
+        default: "cae-mitchtest.tfstate"
         type: string
       runner:
         description: "Type of runner to use for deployment. Defaults to GitHub hosted Linux"

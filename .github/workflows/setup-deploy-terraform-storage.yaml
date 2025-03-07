@@ -35,7 +35,7 @@ jobs:
             REGION_SUFFIX="${{ vars.REGION_SUFFIX }}"
             ENVIRONMENT_SUFFIX="${{ vars.ENVIRONMENT_SUFFIX }}"
 
-            RESOURCE_GROUP="rg-deploymentinfra-tewheke-${ENVIRONMENT_SUFFIX}-${REGION_SUFFIX}"
+            RESOURCE_GROUP="rg-deploymentinfra-mitchtest-${ENVIRONMENT_SUFFIX}-${REGION_SUFFIX}"
             STORAGE_ACCOUNT_NAME="samojtwtfstate${ENVIRONMENT_SUFFIX}${REGION_SUFFIX}"
             LOCATION="${REGION}"
             SKU="Standard_LRS"
