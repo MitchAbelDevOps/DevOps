@@ -101,6 +101,7 @@ jobs:
             --image "$CONTAINER_REGISTRY_NAME.azurecr.io/$CONTAINER_IMAGE_NAME" \
             --cpu 2 \
             --memory 4 \
+            --os-type "Linux" \
             --restart-policy Never \
             --registry-login-server "$CONTAINER_REGISTRY_NAME.azurecr.io" \
             --acr-identity "$UAMI_ACRPULL_ID" \
