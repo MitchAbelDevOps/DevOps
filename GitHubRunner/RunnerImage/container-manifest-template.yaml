@@ -3,7 +3,10 @@ location: "$REGION"
 name: mitchtest-runner-group
 identity:
   type: UserAssigned
-  $UAMI_ACRPULL_ID: {}
+  userAssignedIdentities: 
+    {
+      "$UAMI_ACRPULL_ID": {}
+    }
 properties:
   containers:
   - name: mitchtest-runner-01
