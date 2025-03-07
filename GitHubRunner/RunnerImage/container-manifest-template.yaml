@@ -31,8 +31,6 @@ properties:
         value: "https://api.github.com/repos/$ORG/actions/runners/registration-token"
       - name: GITHUB_APP_KEY
         value: "$GITHUB_APP_KEY"
-      # - name: GITHUB_APP_KEY
-      #   secureValue: "$GITHUB_APP_KEY"
   - name: mitchtest-runner-02
     properties:
       image: "$CONTAINER_REGISTRY_NAME.azurecr.io/$CONTAINER_IMAGE_NAME"
@@ -55,8 +53,6 @@ properties:
         value: "https://api.github.com/repos/$ORG/actions/runners/registration-token"
       - name: GITHUB_APP_KEY
         value: "$GITHUB_APP_KEY"
-      # - name: GITHUB_APP_KEY
-      #   secureValue: "$GITHUB_APP_KEY"
   osType: Linux
   restartPolicy: Never
   imageRegistryCredentials:
