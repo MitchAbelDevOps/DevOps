@@ -22,7 +22,7 @@ properties:
       - name: ENV
         value: "$ENV"
       - name: GITHUB_APP_ID
-        value: "$GITHUB_APP_ID"
+        value: "$APP_ID"
       - name: ORG_NAME
         value: "$ORG"
       - name: GH_URL
@@ -44,7 +44,7 @@ properties:
       - name: ENV
         value: "$ENV"
       - name: GITHUB_APP_ID
-        value: "$GITHUB_APP_ID"
+        value: "$APP_ID"
       - name: ORG_NAME
         value: "$ORG"
       - name: GH_URL
