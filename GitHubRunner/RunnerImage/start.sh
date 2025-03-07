@@ -5,6 +5,7 @@ set -o pipefail
 app_id=$GITHUB_APP_ID
 printf '%s\n' "App ID: $app_id"
 pem=$(echo "$GITHUB_APP_KEY" | sed 's/\\n/\n/g')
+echo "$pem" | head -n 10
 env=$ENV
 
 now=$(date +%s)
