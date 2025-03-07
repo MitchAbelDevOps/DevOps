@@ -3,6 +3,7 @@
 set -o pipefail
 
 app_id=$GITHUB_APP_ID
+printf '%s\n' "App ID: $app_id"
 pem=$(echo -e "${GITHUB_APP_KEY}")
 env=$ENV
 
