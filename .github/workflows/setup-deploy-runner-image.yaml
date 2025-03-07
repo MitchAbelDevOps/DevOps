@@ -102,12 +102,12 @@ jobs:
           export GITHUB_APP_KEY_PLACEHOLDER="__GITHUB_APP_KEY__"
           envsubst < "$GITHUB_WORKSPACE/GitHubRunner/RunnerImage/container-manifest-template.yaml" > "$GITHUB_WORKSPACE/GitHubRunner/RunnerImage/container-manifest-temp.yaml"
 
-          # Step 2: Replace the placeholder with the actual multi-line key, preserving format
-          sed "s|$GITHUB_APP_KEY_PLACEHOLDER|$GITHUB_APP_KEY|" "$GITHUB_WORKSPACE/GitHubRunner/RunnerImage/container-manifest-temp.yaml" > "$GITHUB_WORKSPACE/GitHubRunner/RunnerImage/container-manifest.yaml"
+          # Step 2: Replace the placeholder with the multi-line private key safely
+          awk -v key="$GITHUB_APP_KEY" '{gsub("__GITHUB_APP_KEY__", key)}1' "$GITHUB_WORKSPACE/GitHubRunner/RunnerImage/container-manifest-temp.yaml" > "$GITHUB_WORKSPACE/GitHubRunner/RunnerImage/container-manifest.yaml"
 
           # Step 3: Deploy
           az container create --resource-group "$RESOURCE_GROUP" --file "$GITHUB_WORKSPACE/GitHubRunner/RunnerImage/container-manifest.yaml"
-          
+
           # az container create \
           #   --name "$CONTAINER_NAME" \
           #   --resource-group "$RESOURCE_GROUP" \
