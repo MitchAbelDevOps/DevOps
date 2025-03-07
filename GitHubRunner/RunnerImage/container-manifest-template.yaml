@@ -1,4 +1,4 @@
-apiVersion: 2019-12-01
+apiVersion: 2021-10-01
 location: "$REGION"
 name: mitchtest-runner-group
 identity:
