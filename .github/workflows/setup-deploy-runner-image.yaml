@@ -71,6 +71,9 @@ jobs:
       INSTALLATION_ID: ${{ vars.SELF_HOSTED_RUNNER_INSTALLATION_ID }}
 
     steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        
       - name: Azure Login
         uses: azure/login@v1
         with:
