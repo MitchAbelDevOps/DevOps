@@ -100,7 +100,7 @@ jobs:
         run: |
           echo $UAMI_ACRPULL_ID
 
-          envsubst < "$GITHUB_WORKSPACE/GitHubRunner/RunnerImage/container-manifest-template.yaml" > "$GITHUB_WORKSPACE/GitHubRunner/RunnerImage/container-manifest.yaml && cat output.yaml"
+          envsubst < "$GITHUB_WORKSPACE/GitHubRunner/RunnerImage/container-manifest-template.yaml" > "$GITHUB_WORKSPACE/GitHubRunner/RunnerImage/container-manifest.yaml"
 
           az container create --resource-group "$RESOURCE_GROUP" --file "$GITHUB_WORKSPACE/GitHubRunner/RunnerImage/container-manifest.yaml"
           
