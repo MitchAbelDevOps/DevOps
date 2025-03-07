@@ -53,19 +53,19 @@ resource "azurerm_role_assignment" "uami_role_assignment" {
   principal_id         = azurerm_user_assigned_identity.acr_pull.principal_id
 }
 
-// Container App Environment
-resource "azurerm_container_app_environment" "container_app_environment" {
-  // Change name to have 01 suffix
-  name                               = "cae-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
-  location                           = var.location
-  resource_group_name                = local.fullResourceGroupName
-  log_analytics_workspace_id         = azurerm_log_analytics_workspace.log_analytics_workspace.id
-  infrastructure_subnet_id           = data.azurerm_subnet.runners_subnet.id
-  infrastructure_resource_group_name = "rg-caeinfra-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
-  internal_load_balancer_enabled     = true
+# // Container App Environment
+# resource "azurerm_container_app_environment" "container_app_environment" {
+#   // Change name to have 01 suffix
+#   name                               = "cae-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
+#   location                           = var.location
+#   resource_group_name                = local.fullResourceGroupName
+#   log_analytics_workspace_id         = azurerm_log_analytics_workspace.log_analytics_workspace.id
+#   infrastructure_subnet_id           = data.azurerm_subnet.runners_subnet.id
+#   infrastructure_resource_group_name = "rg-caeinfra-${var.resourceSuffix}-${var.environment}-${var.locationSuffix}"
+#   internal_load_balancer_enabled     = true
 
-  workload_profile {
-    name                  = "Consumption"
-    workload_profile_type = "Consumption"
-  }
-}
+#   workload_profile {
+#     name                  = "Consumption"
+#     workload_profile_type = "Consumption"
+#   }
+# }
