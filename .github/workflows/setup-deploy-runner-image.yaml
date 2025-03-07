@@ -97,12 +97,13 @@ jobs:
           az container create \
             --name "$CONTAINER_NAME" \
             --resource-group "$RESOURCE_GROUP" \
+            --assign-identity "$UAMI_ACRPULL_ID" \
             --image "$CONTAINER_REGISTRY_NAME.azurecr.io/$CONTAINER_IMAGE_NAME" \
             --cpu 2 \
             --memory 4 \
             --restart-policy Never \
             --registry-login-server "$CONTAINER_REGISTRY_NAME.azurecr.io" \
-            --registry-identity "$UAMI_ACRPULL_ID" \
+            --acr-identity "$UAMI_ACRPULL_ID" \
             --environment-variables \
               "ENV=$ENV" \
               "GITHUB_APP_ID=$APP_ID" \
