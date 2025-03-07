@@ -95,10 +95,10 @@ jobs:
 
       - name: Deploy to Azure Container Instance (ACI)
         run: |
-          envsubt < GitHubRunner/RunnerImage/container-manifest-template.yaml > GitHubRunner/RunnerImage/container-manifest.yaml
+          envsubst < "$GITHUB_WORKSPACE/GitHubRunner/RunnerImage/container-manifest-template.yaml" > "$GITHUB_WORKSPACE/GitHubRunner/RunnerImage/container-manifest.yaml"
 
-          az container create --resource-group "$RESOURCE_GROUP" --file GitHubRunner/RunnerImage/container-manifest.yaml
-
+          az container create --resource-group "$RESOURCE_GROUP" --file "$GITHUB_WORKSPACE/GitHubRunner/RunnerImage/container-manifest.yaml"
+          
           # az container create \
           #   --name "$CONTAINER_NAME" \
           #   --resource-group "$RESOURCE_GROUP" \
