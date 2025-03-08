@@ -4,7 +4,10 @@ set -o pipefail
 
 app_id=$GITHUB_APP_ID
 printf '%s\n' "App ID: $app_id"
-pem=$(echo "$GITHUB_APP_KEY")
+
+# Decode the private key from Base64
+pem=$(echo "$GITHUB_APP_KEY" | base64 -d)
+
 echo "$pem" | head -n 10
 env=$ENV
 
