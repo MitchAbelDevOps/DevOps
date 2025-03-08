@@ -7,8 +7,6 @@ printf '%s\n' "App ID: $app_id"
 
 # Decode the private key from Base64
 pem=$(echo "$GITHUB_APP_KEY" | base64 -d)
-
-echo "$pem" | head -n 10
 env=$ENV
 
 now=$(date +%s)
