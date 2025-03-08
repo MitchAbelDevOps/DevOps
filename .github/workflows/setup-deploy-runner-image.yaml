@@ -62,6 +62,7 @@ jobs:
       ENVIRONMENT_SUFFIX: ${{ vars.ENVIRONMENT_SUFFIX }}
       ENV: ${{ inputs.environment }}
       RESOURCE_GROUP: "rg-deploymentinfra-mitchtest-${{ vars.ENVIRONMENT_SUFFIX }}-${{ vars.REGION_SUFFIX }}"
+      NETWORK_RESOURCE_GROUP: "rg-networking-mitchtest-${{ vars.ENVIRONMENT_SUFFIX }}-${{ vars.REGION_SUFFIX }}"
       CONTAINER_NAME: "mitchtest-runner"
       CONTAINER_REGISTRY_NAME: "acrmitchtest${{ vars.ENVIRONMENT_SUFFIX }}${{ vars.REGION_SUFFIX }}"
       CONTAINER_IMAGE_NAME: "actions-runner:latest"
@@ -101,7 +102,7 @@ jobs:
           VNET_NAME="vnet-mitchtest-${ENVIRONMENT_SUFFIX}-${REGION_SUFFIX}-01"
           RUNNER_SUBNET_NAME="snet-mitchtest-${ENVIRONMENT_SUFFIX}-runners-${REGION_SUFFIX}-01"
 
-          RUNNER_SUBNET_ID=$(az network vnet subnet show --resource-group $RESOURCE_GROUP --vnet-name $VNET_NAME --name $RUNNER_SUBNET_NAME --query "id" --output tsv)
+          RUNNER_SUBNET_ID=$(az network vnet subnet show --resource-group $NETWORK_RESOURCE_GROUP --vnet-name $VNET_NAME --name $RUNNER_SUBNET_NAME --query "id" --output tsv)
 
           if [ -z "$RUNNER_SUBNET_ID" ]; then
             echo "No Subnet found with name $RUNNER_SUBNET_NAME"
