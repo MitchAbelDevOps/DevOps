@@ -53,6 +53,9 @@ properties:
         value: "https://api.github.com/repos/$ORG/actions/runners/registration-token"
       - name: GITHUB_APP_KEY
         secureValue: "__GITHUB_APP_KEY_B64__"
+  subnetIds:
+  - id: $RUNNER_SUBNET_ID
+    name: $RUNNER_SUBNET_NAME
   osType: Linux
   restartPolicy: Never
   imageRegistryCredentials:
