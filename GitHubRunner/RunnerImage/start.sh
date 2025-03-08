@@ -2,6 +2,7 @@
 
 set -o pipefail
 
+NUM_RUNNERS=2  # Number of runners to register
 app_id=$GITHUB_APP_ID
 printf '%s\n' "App ID: $app_id"
 
@@ -19,31 +20,25 @@ header_json='{
     "typ":"JWT",
     "alg":"RS256"
 }'
-# Header encode
 header=$( echo -n "${header_json}" | b64enc )
 
 payload_json="{
     \"iat\":${iat},
     \"exp\":${exp},
-    \"iss\":\"${app_id}\"
+    \"iss\":\"${app_id}\"    
 }"
-# Payload encode
 payload=$( echo -n "${payload_json}" | b64enc )
 
-# Signature
 header_payload="${header}"."${payload}"
 signature=$(
     openssl dgst -sha256 -sign <(echo "${pem}") \
     <(echo -n "${header_payload}") | b64enc
 )
 
-# Create JWT
 JWT="${header_payload}"."${signature}"
 printf '%s\n' "JWT: $JWT"
 
-# Exchange the JWT for an installation token
-
-# Fetch the installation ID for the App (assuming single installation)
+# Fetch the installation ID
 echo "Fetching installation ID..."
 installation_id=$(curl -s -H "Authorization: Bearer $JWT" \
                       -H "Accept: application/vnd.github+json" \
@@ -56,7 +51,7 @@ if [ -z "$installation_id" ] || [ "$installation_id" == "null" ]; then
   exit 1
 fi
 
-# Use the installation ID to get an access token
+# Get the installation token
 echo "Fetching installation token..."
 installation_token=$(curl -s -X POST \
                   -H "Authorization: Bearer $JWT" \
@@ -71,8 +66,7 @@ fi
 
 echo "Installation Token: $installation_token"
 
-
-# Fetch the registration token for the self-hosted runner
+# Fetch the registration token
 echo "Fetching registration token..."
 reg_token=$(curl -s -X POST \
                 -H "Authorization: token $installation_token" \
@@ -87,12 +81,25 @@ if [ -z "$reg_token" ] || [ "$reg_token" == "null" ]; then
   exit 1
 fi
 
-# Configure and run the self-hosted runner
-echo "Configuring and starting the runner"
-./config.sh --url https://github.com/"${ORG_NAME}" \
-            --token "${reg_token}" \
-            --unattended \
-            --name "Mitchtest-Runner-${INSTANCE}" \
-            --labels self-hosted-"${ENV}"
+# Start multiple runners
+for i in $(seq 1 $NUM_RUNNERS); do
+    echo "Configuring runner #$i"
+    RUNNER_DIR="runner_$i"
+    mkdir -p $RUNNER_DIR
+    cp -r * $RUNNER_DIR
+    cd $RUNNER_DIR
+    
+    ./config.sh --url https://github.com/"${ORG_NAME}" \
+                --token "${reg_token}" \
+                --unattended \
+                --name "Runner-${INSTANCE}-$i" \
+                --labels self-hosted-"${ENV}"
 
-./run.sh
+    echo "Starting runner #$i"
+    ./run.sh &  # Start the runner in the background
+
+    cd ..
+done
+
+# Keep the container running
+wait
