@@ -31,28 +31,6 @@ properties:
         value: "https://api.github.com/repos/$ORG/actions/runners/registration-token"
       - name: GITHUB_APP_KEY
         secureValue: "__GITHUB_APP_KEY_B64__"
-  - name: mitchtest-runner-02
-    properties:
-      image: "$CONTAINER_REGISTRY_NAME.azurecr.io/$CONTAINER_IMAGE_NAME"
-      resources:
-        requests:
-          cpu: 1
-          memoryInGb: 1.5
-      environmentVariables:
-      - name: INSTANCE
-        value: "02"
-      - name: ENV
-        value: "$ENV"
-      - name: GITHUB_APP_ID
-        value: "$APP_ID"
-      - name: ORG_NAME
-        value: "$ORG"
-      - name: GH_URL
-        value: "https://github.com/$ORG"
-      - name: REGISTRATION_TOKEN_API_URL
-        value: "https://api.github.com/repos/$ORG/actions/runners/registration-token"
-      - name: GITHUB_APP_KEY
-        secureValue: "__GITHUB_APP_KEY_B64__"
   subnetIds:
   - id: $RUNNER_SUBNET_ID
     name: $RUNNER_SUBNET_NAME
