@@ -33,13 +33,13 @@ jobs:
           inlineScript: |
             REGION="${{ vars.REGION }}"
             REGION_SUFFIX="${{ vars.REGION_SUFFIX }}"
-            ENVIRONMENT_SUFFIX="${{ vars.ENVIRONMENT_SUFFIX }}"
+            ENVIRONMENT_GROUP="${{ vars.ENVIRONMENT_GROUP }}"
 
-            RESOURCE_GROUP="rg-deploymentinfra-mitchtest-${ENVIRONMENT_SUFFIX}-${REGION_SUFFIX}"
-            STORAGE_ACCOUNT_NAME="samttfstate${ENVIRONMENT_SUFFIX}${REGION_SUFFIX}"
-            NETWORKING_RESOURCE_GROUP="rg-networking-mitchtest-${ENVIRONMENT_SUFFIX}-${REGION_SUFFIX}"
-            VNET_NAME="vnet-mitchtest-${ENVIRONMENT_SUFFIX}-${REGION_SUFFIX}-01"
-            SUBNET_NAME="snet-mitchtest-${ENVIRONMENT_SUFFIX}-runners-${REGION_SUFFIX}-01"
+            RESOURCE_GROUP="rg-deploymentinfra-mitchtest-${ENVIRONMENT_GROUP}-${REGION_SUFFIX}"
+            STORAGE_ACCOUNT_NAME="samttfstate${ENVIRONMENT_GROUP}${REGION_SUFFIX}"
+            NETWORKING_RESOURCE_GROUP="rg-networking-mitchtest-${ENVIRONMENT_GROUP}-${REGION_SUFFIX}"
+            VNET_NAME="vnet-mitchtest-${ENVIRONMENT_GROUP}-${REGION_SUFFIX}-01"
+            SUBNET_NAME="snet-mitchtest-${ENVIRONMENT_GROUP}-runners-${REGION_SUFFIX}-01"
 
             # Get the subnet ID
             SUBNET_ID=$(az network vnet subnet show \

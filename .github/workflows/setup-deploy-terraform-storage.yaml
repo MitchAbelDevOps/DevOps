@@ -33,10 +33,10 @@ jobs:
           inlineScript: |
             REGION="${{ vars.REGION }}"
             REGION_SUFFIX="${{ vars.REGION_SUFFIX }}"
-            ENVIRONMENT_SUFFIX="${{ vars.ENVIRONMENT_SUFFIX }}"
+            ENVIRONMENT_GROUP="${{ vars.ENVIRONMENT_GROUP }}"
 
-            RESOURCE_GROUP="rg-deploymentinfra-mitchtest-${ENVIRONMENT_SUFFIX}-${REGION_SUFFIX}"
-            STORAGE_ACCOUNT_NAME="samttfstate${ENVIRONMENT_SUFFIX}${REGION_SUFFIX}"
+            RESOURCE_GROUP="rg-deploymentinfra-mitchtest-${ENVIRONMENT_GROUP}-${REGION_SUFFIX}"
+            STORAGE_ACCOUNT_NAME="samttfstate${ENVIRONMENT_GROUP}${REGION_SUFFIX}"
             LOCATION="${REGION}"
             SKU="Standard_LRS"
             CONTAINER_NAME="terraform-state"
