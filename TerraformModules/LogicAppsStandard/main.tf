@@ -265,7 +265,7 @@ resource "null_resource" "logicapp_standard_customcommands" {
 // Logic App Private Endpoint
 // NOTE: Deploys in networking resource group, not the shared
 module "logicapp_private_endpoint" {
-  source                         = "git::https://github.com/MOJNZ-Default/azure-devops-resources//TerraformModules/PrivateEndpoints"
+  source                         = "git::https://github.com/MitchAbelDevOps/azure-devops-resources//TerraformModules/PrivateEndpoints"
   name                           = "pep-${local.logicAppName}"
   location                       = var.location
   resource_group_name            = local.networkResourceGroupName
@@ -280,7 +280,7 @@ module "logicapp_private_endpoint" {
 // Storage Files Private Endpoint
 // NOTE: Deploys in networking resource group, not the shared
 module "storage_files_private_endpoint" {
-  source                         = "git::https://github.com/MOJNZ-Default/azure-devops-resources//TerraformModules/PrivateEndpoints"
+  source                         = "git::https://github.com/MitchAbelDevOps/azure-devops-resources//TerraformModules/PrivateEndpoints"
   name                           = "pep-${local.storageAccountName}-files"
   location                       = var.location
   resource_group_name            = local.networkResourceGroupName
@@ -299,7 +299,7 @@ module "storage_files_private_endpoint" {
 // Storage Blob Private Endpoint
 // NOTE: Deploys in networking resource group, not the shared
 module "storage_blob_private_endpoint" {
-  source                         = "git::https://github.com/MOJNZ-Default/azure-devops-resources//TerraformModules/PrivateEndpoints"
+  source                         = "git::https://github.com/MitchAbelDevOps/azure-devops-resources//TerraformModules/PrivateEndpoints"
   name                           = "pep-${local.storageAccountName}-blob"
   location                       = var.location
   resource_group_name            = local.networkResourceGroupName
@@ -318,7 +318,7 @@ module "storage_blob_private_endpoint" {
 // Storage Tables Private Endpoint
 // NOTE: Deploys in networking resource group, not the shared
 module "storage_tables_private_endpoint" {
-  source                         = "git::https://github.com/MOJNZ-Default/azure-devops-resources//TerraformModules/PrivateEndpoints"
+  source                         = "git::https://github.com/MitchAbelDevOps/azure-devops-resources//TerraformModules/PrivateEndpoints"
   name                           = "pep-${local.storageAccountName}-table"
   location                       = var.location
   resource_group_name            = local.networkResourceGroupName
@@ -337,7 +337,7 @@ module "storage_tables_private_endpoint" {
 // Storage Queues Private Endpoint
 // NOTE: Deploys in networking resource group, not the shared
 module "storage_queues_private_endpoint" {
-  source                         = "git::https://github.com/MOJNZ-Default/azure-devops-resources//TerraformModules/PrivateEndpoints"
+  source                         = "git::https://github.com/MitchAbelDevOps/azure-devops-resources//TerraformModules/PrivateEndpoints"
   name                           = "pep-${local.storageAccountName}-queue"
   location                       = var.location
   resource_group_name            = local.networkResourceGroupName

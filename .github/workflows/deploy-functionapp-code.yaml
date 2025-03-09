@@ -59,8 +59,8 @@ jobs:
       - name: Deploy Function app workflows
         run: |
           az functionapp deployment source config-zip \
-            --name "${{ inputs.function_app_name }}-tewheke-${{ vars.ENVIRONMENT_SUFFIX }}-${{ vars.REGION_SUFFIX }}-${{ inputs.function_app_instance }}" \
-            --resource-group "${{ inputs.function_app_resourcegroup }}-tewheke-${{ vars.ENVIRONMENT_SUFFIX }}-${{ vars.REGION_SUFFIX }}" \
+            --name "${{ inputs.function_app_name }}-mitchtest-${{ vars.ENVIRONMENT_SUFFIX }}-${{ vars.REGION_SUFFIX }}-${{ inputs.function_app_instance }}" \
+            --resource-group "${{ inputs.function_app_resourcegroup }}-mitchtest-${{ vars.ENVIRONMENT_SUFFIX }}-${{ vars.REGION_SUFFIX }}" \
             --src ${{ runner.temp }}/${{ inputs.publish_artifact_name }}.zip \
       #       --slot "deploy-slot"
 
@@ -69,7 +69,7 @@ jobs:
       #   if: ${{ inputs.run_slot_swap == true }}
       #   run: |
       #     az functionapp deployment slot swap \
-      #       --name "${{ inputs.function_app_name }}-tewheke-${{ vars.ENVIRONMENT_SUFFIX }}-${{ vars.REGION_SUFFIX }}-${{ inputs.function_app_instance }}" \
-      #       --resource-group "${{ inputs.function_app_resourcegroup }}-tewheke-${{ vars.ENVIRONMENT_SUFFIX }}-${{ vars.REGION_SUFFIX }}" \
+      #       --name "${{ inputs.function_app_name }}-mitchtest-${{ vars.ENVIRONMENT_SUFFIX }}-${{ vars.REGION_SUFFIX }}-${{ inputs.function_app_instance }}" \
+      #       --resource-group "${{ inputs.function_app_resourcegroup }}-mitchtest-${{ vars.ENVIRONMENT_SUFFIX }}-${{ vars.REGION_SUFFIX }}" \
       #       --slot deploy-slot \
       #       --target-slot production

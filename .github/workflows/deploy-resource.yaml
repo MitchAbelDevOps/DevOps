@@ -39,7 +39,7 @@ jobs:
         run: |
           echo "TF_VAR_location=${{ vars.REGION }}" >> $GITHUB_ENV
           echo "TF_VAR_locationSuffix=${{ vars.REGION_SUFFIX }}" >> $GITHUB_ENV
-          echo "TF_VAR_resourceSuffix=tewheke" >> $GITHUB_ENV
+          echo "TF_VAR_resourceSuffix=mitchtest" >> $GITHUB_ENV
           echo "TF_VAR_environment=${{ vars.ENVIRONMENT_SUFFIX }}" >> $GITHUB_ENV
           echo "TF_VAR_environmentGroup=${{ vars.ENVIRONMENT_GROUP }}" >> $GITHUB_ENV
           echo "ARM_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
@@ -52,9 +52,9 @@ jobs:
         id: github_token
         uses: actions/create-github-app-token@v1
         with:
-          app-id: ${{ vars[inputs.environment == 'prod' && 'SELF_HOSTED_RUNNER_PROD_APP_ID' || 'SELF_HOSTED_RUNNER_NONPROD_APP_ID'] }}
-          private-key: ${{ secrets[inputs.environment == 'prod' && 'SELF_HOSTED_RUNNER_PROD_APP_PRIVATE_KEY' || 'SELF_HOSTED_RUNNER_NONPROD_APP_PRIVATE_KEY'] }}
-          owner: MOJNZ-Default
+          app-id: ${{ vars.SELF_HOSTED_RUNNER_APP_ID }}
+          private-key: ${{ secrets.SELF_HOSTED_RUNNER_APP_PRIVATE_KEY }}
+          owner: MitchAbelDevOps
 
       # Configure Git to Use the Token
       - name: Configure Git for GitHub App Authentication
@@ -85,7 +85,7 @@ jobs:
       # Retrieve Terraform State Storage Account key
       - name: Get Terraform Storage Account Key
         run: |
-          RESOURCE_GROUP="rg-deploymentinfra-tewheke-${{ vars.ENVIRONMENT_GROUP }}-${{ vars.REGION_SUFFIX }}"
+          RESOURCE_GROUP="rg-deploymentinfra-mitchtest-${{ vars.ENVIRONMENT_GROUP }}-${{ vars.REGION_SUFFIX }}"
           STORAGE_ACCOUNT_NAME="satwtfstate${{ vars.ENVIRONMENT_GROUP }}${{ vars.REGION_SUFFIX }}01"
           key=$(az storage account keys list \
             -g $RESOURCE_GROUP \
@@ -136,7 +136,7 @@ jobs:
         run: |
           echo "TF_VAR_location=${{ vars.REGION }}" >> $GITHUB_ENV
           echo "TF_VAR_locationSuffix=${{ vars.REGION_SUFFIX }}" >> $GITHUB_ENV
-          echo "TF_VAR_resourceSuffix=tewheke" >> $GITHUB_ENV
+          echo "TF_VAR_resourceSuffix=mitchtest" >> $GITHUB_ENV
           echo "TF_VAR_environment=${{ vars.ENVIRONMENT_SUFFIX }}" >> $GITHUB_ENV
           echo "TF_VAR_environmentGroup=${{ vars.ENVIRONMENT_GROUP }}" >> $GITHUB_ENV
           echo "ARM_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
@@ -151,7 +151,7 @@ jobs:
         with:
           app-id: ${{ vars[inputs.environment == 'prod' && 'SELF_HOSTED_RUNNER_PROD_APP_ID' || 'SELF_HOSTED_RUNNER_NONPROD_APP_ID'] }}
           private-key: ${{ secrets[inputs.environment == 'prod' && 'SELF_HOSTED_RUNNER_PROD_APP_PRIVATE_KEY' || 'SELF_HOSTED_RUNNER_NONPROD_APP_PRIVATE_KEY'] }}
-          owner: MOJNZ-Default
+          owner: MitchAbelDevOps
 
       # Configure Git to Use the Token
       - name: Configure Git for GitHub App Authentication
@@ -182,7 +182,7 @@ jobs:
       # Retrieve Terraform State Storage Account key
       - name: Get Terraform Storage Account Key
         run: |
-          RESOURCE_GROUP="rg-deploymentinfra-tewheke-${{ vars.ENVIRONMENT_GROUP }}-${{ vars.REGION_SUFFIX }}"
+          RESOURCE_GROUP="rg-deploymentinfra-mitchtest-${{ vars.ENVIRONMENT_GROUP }}-${{ vars.REGION_SUFFIX }}"
           STORAGE_ACCOUNT_NAME="satwtfstate${{ vars.ENVIRONMENT_GROUP }}${{ vars.REGION_SUFFIX }}01"
           key=$(az storage account keys list \
             -g $RESOURCE_GROUP \

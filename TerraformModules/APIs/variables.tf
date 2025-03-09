@@ -134,14 +134,14 @@ locals {
   /**
   * Should result in an object that looks like:
   * {
-  *   "las-sandbox-tewheke-aue-dev.wf-test" = {
-  *     logic_app_name     = "las-sandbox-tewheke-aue-dev"
-  *     resource_group_name = "rg-sandbox-tewheke-aue-dev"
+  *   "las-sandbox-mitchtest-aue-dev.wf-test" = {
+  *     logic_app_name     = "las-sandbox-mitchtest-aue-dev"
+  *     resource_group_name = "rg-sandbox-mitchtest-aue-dev"
   *     workflow_name      = "wf-test"
   *   },
-  *   "las-sandbox-tewheke-aue-dev.wf-sampleapi-backend" = {
-  *     logic_app_name     = "las-sandbox-tewheke-aue-dev"
-  *     resource_group_name = "rg-sandbox-tewheke-aue-dev"
+  *   "las-sandbox-mitchtest-aue-dev.wf-sampleapi-backend" = {
+  *     logic_app_name     = "las-sandbox-mitchtest-aue-dev"
+  *     resource_group_name = "rg-sandbox-mitchtest-aue-dev"
   *     workflow_name      = "wf-sampleapi-backend"
   *   }
   * }
