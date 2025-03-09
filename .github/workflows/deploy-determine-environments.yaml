@@ -1,0 +1,58 @@
+name: Determine Deployment Environments
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "The target GitHub environment for deployment (dev, test, stg, pwe, prd)"
+        required: true
+        type: string
+      event_name:
+        description: "The name of the event that triggered the workflow"
+        required: true
+        type: string
+      event_inputs:
+        description: "Serialized event inputs provided by the trigger event (used for workflow_dispatch)"
+        required: false
+        type: string
+    outputs:
+      env_map:
+        value: ${{ jobs.determine-deployment-environments.outputs.env_map }}
+
+jobs:
+  determine-deployment-environments:
+    name: "Determine envrionment from branch/input"
+    runs-on: ubuntu-latest
+    outputs:
+      env_map: ${{ steps.set-matrix.outputs.env_map }}
+    steps:
+      - name: Set the matrix values
+        id: set-matrix
+        run: |
+          echo "event_name=${{ inputs.event_name }}"
+          echo "github.ref=${{ github.ref }}"
+
+          # Parse the serialized event_inputs (if provided)
+          if [[ -n "${{ inputs.event_inputs }}" ]]; then
+            echo "event_inputs=${{ inputs.event_inputs }}"
+            event_inputs=$(echo '${{ inputs.event_inputs }}' | jq .)
+          fi
+
+          # Determine values based on the event name
+          if [[ "${{ inputs.event_name }}" == "workflow_dispatch" ]]; then
+            case "$(echo $event_inputs | jq -r .environment)" in
+              "dev" ) echo "env_map=[{\"environment\": \"dev\", \"branch\": \"develop\", \"runner\": \"self-hosted-npe\"}]" >> $GITHUB_OUTPUT ;;
+              "test" ) echo "env_map=[{\"environment\": \"test\", \"branch\": \"develop\", \"runner\": \"self-hosted-npe\"}]" >> $GITHUB_OUTPUT ;;
+              "stg" ) echo "env_map=[{\"environment\": \"stg\", \"branch\": \"release/*\", \"runner\": \"self-hosted-ppe\"}]" >> $GITHUB_OUTPUT ;;
+              "pwe" ) echo "env_map=[{\"environment\": \"pwe\", \"branch\": \"release/*\", \"runner\": \"self-hosted-ppe\"}]" >> $GITHUB_OUTPUT ;;
+              "prd" ) echo "env_map=[{\"environment\": \"prd\", \"branch\": \"main\", \"runner\": \"self-hosted-prd\"}]" >> $GITHUB_OUTPUT ;;
+              * ) echo "Invalid environment"; exit 1 ;;
+            esac
+          elif [[ "${{ inputs.event_name }}" == "push" ]]; then
+            case "${{ github.ref }}" in
+              "refs/heads/develop" ) echo "env_map=[{\"environment\": \"dev\", \"branch\": \"develop\", \"runner\": \"self-hosted-npe\"},{\"environment\": \"test\", \"branch\": \"develop\", \"runner\": \"self-hosted-npe\"}]" >> $GITHUB_OUTPUT ;;
+              "refs/heads/release/"* ) echo "env_map=[{\"environment\": \"stg\", \"branch\": \"release/*\", \"runner\": \"self-hosted-ppe\"},{\"environment\": \"pwe\", \"branch\": \"release/*\", \"runner\": \"self-hosted-ppe\"}]" >> $GITHUB_OUTPUT ;;
+              "refs/heads/main" ) echo "env_map=[{\"environment\": \"prd\", \"branch\": \"main\", \"runner\": \"self-hosted-prd\"}]" >> $GITHUB_OUTPUT ;;
+              * ) echo "Unsupported branch"; exit 1 ;;
+            esac
+          fi

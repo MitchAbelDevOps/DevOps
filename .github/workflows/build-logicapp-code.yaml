@@ -1,0 +1,62 @@
+name: "Build Logic App Code"
+
+on:
+  workflow_call:
+    inputs:
+      root_directory:
+        description: "Root directory where Logic App code is located"
+        required: true
+        type: string
+      contents_to_package:
+        description: "Files or file extensions to package for deployment"
+        required: false
+        default: |
+          host.json
+          proxies.json
+          wf-*/**
+          Artifacts/**
+          Connections/**
+          Parameters/**
+          lib/**
+        type: string
+      publish_artifact_name:
+        description: "Name of the artifact to publish"
+        required: false
+        default: "logicapps_publish_artifact"
+        type: string
+      runner:
+        description: "Type of runner to use for deployment. Defaults to GitHub hosted Linux"
+        required: false
+        type: string
+        default: "ubuntu-latest"
+
+jobs:
+  build:
+    name: "Build Logic App files"
+    runs-on: ${{ inputs.runner }}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Create temporary project folder
+        run: |
+          cd ${{ inputs.root_directory }}
+          mkdir -p project_output
+
+          # Convert the multi-line string into an array of patterns
+          mapfile -t patterns <<< "${{ inputs.contents_to_package }}"
+
+          # Copy only the specified files
+          for file in "${patterns[@]}"; do
+            cp -r --parents $file project_output 2>/dev/null || echo "$file not found"
+          done
+        shell: bash
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.publish_artifact_name }}
+          path: "${{ inputs.root_directory }}/project_output/*"
+
+      - name: Cleanup temporary files
+        run: rm -rf project_output

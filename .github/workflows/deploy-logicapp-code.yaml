@@ -1,0 +1,86 @@
+name: "Deploy Logic App Code"
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "Deployment Environment"
+        required: true
+        type: string
+      publish_artifact_name:
+        description: "Name of the artifact to publish"
+        required: false
+        default: "logicapps_publish_artifact"
+        type: string
+      logic_app_name:
+        description: "Name of the Logic App to deploy to"
+        required: true
+        type: string
+      logic_app_instance:
+        description: "Instance of the Logic App to deploy to"
+        required: true
+        type: string
+      logic_app_resourcegroup:
+        description: "The Resource Group the target Logic App is deployed in"
+        required: true
+        type: string
+      runner:
+        description: "Type of runner to use for deployment. Defaults to GitHub hosted Linux"
+        required: false
+        type: string
+        default: "ubuntu-latest"
+
+jobs:
+  deploy:
+    name: "Deploy Logic App files"
+    runs-on: ${{ inputs.runner }}
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: "${{ inputs.publish_artifact_name }}"
+          path: ${{ runner.temp }}/artifact
+
+      - name: Replace Parameters and Connections folders with specific files
+        run: |
+          cd ${{ runner.temp }}/artifact
+          # Replace the Parameters folder with the environment-specific parameters file
+          mv ./Parameters/parameters.${{ inputs.environment }}.json parameters.json
+          rm -rf Parameters
+
+          # Replace the Connections folder with the environment-specific connections file
+          mv ./Connections/connections.${{ inputs.environment }}.json connections.json
+          rm -rf Connections
+
+      - name: Rezip downloaded files
+        run: |
+          cd ${{ runner.temp }}/artifact
+          zip -r ../${{ inputs.publish_artifact_name }}.zip .
+        shell: bash
+
+      # Log in to Azure with OIDC
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy logic app workflows
+        run: |
+          az logicapp deployment source config-zip \
+            --name "${{ inputs.logic_app_name }}-tewheke-${{ vars.ENVIRONMENT_SUFFIX }}-${{ vars.REGION_SUFFIX }}-${{ inputs.logic_app_instance }}" \
+            --resource-group "${{ inputs.logic_app_resourcegroup }}-tewheke-${{ vars.ENVIRONMENT_SUFFIX }}-${{ vars.REGION_SUFFIX }}" \
+            --src ${{ runner.temp }}/${{ inputs.publish_artifact_name }}.zip \
+      #       --slot "deploy-slot"
+
+      # # Run slot swap to avoid manual swapping task. Executes by default but can be forced to wait for manual swap for smoke testing/validation
+      # - name: Run slot swap
+      #   if: ${{ inputs.run_slot_swap == true }}
+      #   run: |
+      #     az functionapp deployment slot swap \
+      #       --name "${{ inputs.logic_app_name }}-tewheke-${{ vars.ENVIRONMENT_SUFFIX }}-${{ vars.REGION_SUFFIX }}-${{ inputs.logic_app_instance }}" \
+      #       --resource-group "${{ inputs.logic_app_resourcegroup }}-tewheke-${{ vars.ENVIRONMENT_SUFFIX }}-${{ vars.REGION_SUFFIX }}" \
+      #       --slot deploy-slot \
+      #       --target-slot production

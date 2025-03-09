@@ -26,8 +26,8 @@ on:
         default: "ubuntu-latest"
 
 jobs:
-  deployment:
-    name: "Deploy to ${{ inputs.environment }}"
+  plan:
+    name: "Plan Terraform for ${{ inputs.environment }}"
     runs-on: ${{ inputs.runner }}
     environment: ${{ inputs.environment }}
     steps:
@@ -39,13 +39,33 @@ jobs:
         run: |
           echo "TF_VAR_location=${{ vars.REGION }}" >> $GITHUB_ENV
           echo "TF_VAR_locationSuffix=${{ vars.REGION_SUFFIX }}" >> $GITHUB_ENV
-          echo "TF_VAR_resourceSuffix=mitchtest" >> $GITHUB_ENV
-          echo "TF_VAR_environment=${{ inputs.environment }}" >> $GITHUB_ENV
+          echo "TF_VAR_resourceSuffix=tewheke" >> $GITHUB_ENV
+          echo "TF_VAR_environment=${{ vars.ENVIRONMENT_SUFFIX }}" >> $GITHUB_ENV
+          echo "TF_VAR_environmentGroup=${{ vars.ENVIRONMENT_GROUP }}" >> $GITHUB_ENV
+          echo "ARM_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
+          echo "ARM_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}" >> $GITHUB_ENV
+          echo "ARM_CLIENT_ID=${{ secrets.AZURE_CLIENT_ID }}" >> $GITHUB_ENV
+
+      # Generate GitHub App Token
+      ## NOTE: Get's the secret/vars conditionally depending on environment as we have nonprod/prod versions
+      - name: Generate GitHub App Token
+        id: github_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars[inputs.environment == 'prod' && 'SELF_HOSTED_RUNNER_PROD_APP_ID' || 'SELF_HOSTED_RUNNER_NONPROD_APP_ID'] }}
+          private-key: ${{ secrets[inputs.environment == 'prod' && 'SELF_HOSTED_RUNNER_PROD_APP_PRIVATE_KEY' || 'SELF_HOSTED_RUNNER_NONPROD_APP_PRIVATE_KEY'] }}
+          owner: MOJNZ-Default
+
+      # Configure Git to Use the Token
+      - name: Configure Git for GitHub App Authentication
+        run: |
+          git config --global url."https://x-access-token:${{ steps.github_token.outputs.token }}@github.com/".insteadOf "https://github.com/"
 
       # Copy Resource Specific Files to Root Directory
       - name: Prepare Terraform Files
         run: |
           find ${{ inputs.sub_directory }} -maxdepth 1 -name '*.tf' -exec mv {} ${{ inputs.root_directory }}/ \;
+          find ${{ inputs.sub_directory }} -maxdepth 1 -name '*.tpl' -exec mv {} ${{ inputs.root_directory }}/ \;
           cp ${{ inputs.sub_directory }}/Variables/${{ inputs.environment }}.tfvars ${{ inputs.root_directory }}/${{ inputs.environment }}.tfvars
 
       # Install Terraform
@@ -65,9 +85,8 @@ jobs:
       # Retrieve Terraform State Storage Account key
       - name: Get Terraform Storage Account Key
         run: |
-          RESOURCE_GROUP="rg-deploymentinfra-mitchtest-${{ inputs.environment }}-${{ vars.REGION_SUFFIX }}"
-          STORAGE_ACCOUNT_NAME="samojtwtfstate${{ inputs.environment }}${{ vars.REGION_SUFFIX }}"
-
+          RESOURCE_GROUP="rg-deploymentinfra-tewheke-${{ vars.ENVIRONMENT_GROUP }}-${{ vars.REGION_SUFFIX }}"
+          STORAGE_ACCOUNT_NAME="satwtfstate${{ vars.ENVIRONMENT_GROUP }}${{ vars.REGION_SUFFIX }}01"
           key=$(az storage account keys list \
             -g $RESOURCE_GROUP \
             -n $STORAGE_ACCOUNT_NAME \
@@ -79,7 +98,7 @@ jobs:
       - name: Terraform Init
         run: |
           terraform init \
-            -backend-config="storage_account_name=samojtwtfstate${{ inputs.environment }}${{ vars.REGION_SUFFIX }}" \
+            -backend-config="storage_account_name=satwtfstate${{ vars.ENVIRONMENT_GROUP }}${{ vars.REGION_SUFFIX }}01" \
             -backend-config="container_name=terraform-state" \
             -backend-config="key=${{ inputs.terraform_state_filename }}" \
             -backend-config="access_key=${TF_STORAGE_ACCOUNT_KEY}"
@@ -92,6 +111,100 @@ jobs:
             -input=false \
             -var-file="${{ inputs.environment }}.tfvars" \
             -out=deployment.tfplan
+        working-directory: ${{ inputs.root_directory }}
+
+      - name: Upload Terraform Plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan
+          include-hidden-files: true
+          path: |
+            ${{ github.workspace }}/${{ inputs.root_directory }}/deployment.tfplan
+            ${{ github.workspace }}/${{ inputs.root_directory }}/.terraform.lock.hcl
+
+  apply:
+    name: "Apply Terraform to ${{ inputs.environment }}"
+    runs-on: ${{ inputs.runner }}
+    environment: ${{ inputs.environment }}
+    needs: plan
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      # Set TF vars from workflow inputs
+      - name: Set Environment Variables
+        run: |
+          echo "TF_VAR_location=${{ vars.REGION }}" >> $GITHUB_ENV
+          echo "TF_VAR_locationSuffix=${{ vars.REGION_SUFFIX }}" >> $GITHUB_ENV
+          echo "TF_VAR_resourceSuffix=tewheke" >> $GITHUB_ENV
+          echo "TF_VAR_environment=${{ vars.ENVIRONMENT_SUFFIX }}" >> $GITHUB_ENV
+          echo "TF_VAR_environmentGroup=${{ vars.ENVIRONMENT_GROUP }}" >> $GITHUB_ENV
+          echo "ARM_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
+          echo "ARM_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}" >> $GITHUB_ENV
+          echo "ARM_CLIENT_ID=${{ secrets.AZURE_CLIENT_ID }}" >> $GITHUB_ENV
+
+      # Generate GitHub App Token
+      ## NOTE: Get's the secret/vars conditionally depending on environment as we have nonprod/prod versions
+      - name: Generate GitHub App Token
+        id: github_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars[inputs.environment == 'prod' && 'SELF_HOSTED_RUNNER_PROD_APP_ID' || 'SELF_HOSTED_RUNNER_NONPROD_APP_ID'] }}
+          private-key: ${{ secrets[inputs.environment == 'prod' && 'SELF_HOSTED_RUNNER_PROD_APP_PRIVATE_KEY' || 'SELF_HOSTED_RUNNER_NONPROD_APP_PRIVATE_KEY'] }}
+          owner: MOJNZ-Default
+
+      # Configure Git to Use the Token
+      - name: Configure Git for GitHub App Authentication
+        run: |
+          git config --global url."https://x-access-token:${{ steps.github_token.outputs.token }}@github.com/".insteadOf "https://github.com/"
+
+      # Copy Resource Specific Files to Root Directory
+      - name: Prepare Terraform Files
+        run: |
+          find ${{ inputs.sub_directory }} -maxdepth 1 -name '*.tf' -exec mv {} ${{ inputs.root_directory }}/ \;
+          find ${{ inputs.sub_directory }} -maxdepth 1 -name '*.tpl' -exec mv {} ${{ inputs.root_directory }}/ \;
+          cp ${{ inputs.sub_directory }}/Variables/${{ inputs.environment }}.tfvars ${{ inputs.root_directory }}/${{ inputs.environment }}.tfvars
+
+      # Install Terraform
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: "1.5.0"
+
+      # Log in to Azure with OIDC
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Retrieve Terraform State Storage Account key
+      - name: Get Terraform Storage Account Key
+        run: |
+          RESOURCE_GROUP="rg-deploymentinfra-tewheke-${{ vars.ENVIRONMENT_GROUP }}-${{ vars.REGION_SUFFIX }}"
+          STORAGE_ACCOUNT_NAME="satwtfstate${{ vars.ENVIRONMENT_GROUP }}${{ vars.REGION_SUFFIX }}01"
+          key=$(az storage account keys list \
+            -g $RESOURCE_GROUP \
+            -n $STORAGE_ACCOUNT_NAME \
+            --query "[0].value" -o tsv)
+
+          echo "TF_STORAGE_ACCOUNT_KEY=$key" >> $GITHUB_ENV
+
+      - name: Download Terraform Plan Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-plan
+          path: ${{ inputs.root_directory }}
+
+      # Terraform Init with Terraform State Storage Account details
+      - name: Terraform Init
+        run: |
+          terraform init \
+            -backend-config="storage_account_name=satwtfstate${{ vars.ENVIRONMENT_GROUP }}${{ vars.REGION_SUFFIX }}01" \
+            -backend-config="container_name=terraform-state" \
+            -backend-config="key=${{ inputs.terraform_state_filename }}" \
+            -backend-config="access_key=${TF_STORAGE_ACCOUNT_KEY}"
         working-directory: ${{ inputs.root_directory }}
 
       # Terraform Apply

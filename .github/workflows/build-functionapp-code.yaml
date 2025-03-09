@@ -1,0 +1,71 @@
+name: "Build Function App Code"
+
+on:
+  workflow_call:
+    inputs:
+      solution_directory:
+        description: "Directory where the .NET solution is located"
+        required: true
+        type: string
+      function_app_name:
+        description: "Name of the Function App to deploy to"
+        required: true
+        type: string
+      publish_artifact_name:
+        description: "Name of the artifact to publish"
+        required: false
+        default: "functionapp_publish_artifact"
+        type: string
+      runner:
+        description: "Type of runner to use for the build. Defaults to GitHub hosted Linux"
+        required: false
+        type: string
+        default: "ubuntu-latest"
+
+jobs:
+  build:
+    name: "Build Function App Code"
+    runs-on: ${{ inputs.runner }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Restore Dependencies
+        run: |
+          cd ${{ inputs.solution_directory }}
+          dotnet restore
+
+      - name: Build Solution
+        run: |
+          cd ${{ inputs.solution_directory }}
+          dotnet build --configuration Release --no-restore
+
+      - name: Run Tests
+        run: |
+          cd ${{ inputs.solution_directory }}
+          dotnet test --configuration Release --no-build --logger "trx;LogFileName=test-results.trx"
+
+      - name: Publish Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            ${{ inputs.solution_directory }}/**/TestResults/test-results.trx
+
+      - name: Publish Function App
+        run: |
+          cd ${{ inputs.solution_directory }}
+          dotnet publish ${{ inputs.function_app_name }}-code/${{ inputs.function_app_name }}-code.csproj --configuration Release --output ./publish_output
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.publish_artifact_name }}
+          path: "${{ inputs.solution_directory }}/publish_output/*"
+          include-hidden-files: true
+
+      - name: Cleanup Build Artifacts
+        run: |
+          rm -rf ${{ inputs.solution_directory }}/publish_output
+          rm -f ${{ inputs.solution_directory }}/**/TestResults/test-results.trx
