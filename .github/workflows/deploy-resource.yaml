@@ -86,7 +86,7 @@ jobs:
       - name: Get Terraform Storage Account Key
         run: |
           RESOURCE_GROUP="rg-deploymentinfra-mitchtest-${{ vars.ENVIRONMENT_GROUP }}-${{ vars.REGION_SUFFIX }}"
-          STORAGE_ACCOUNT_NAME="satwtfstate${{ vars.ENVIRONMENT_GROUP }}${{ vars.REGION_SUFFIX }}01"
+          STORAGE_ACCOUNT_NAME="samttfstate${{ vars.ENVIRONMENT_GROUP }}${{ vars.REGION_SUFFIX }}01"
           key=$(az storage account keys list \
             -g $RESOURCE_GROUP \
             -n $STORAGE_ACCOUNT_NAME \
@@ -98,7 +98,7 @@ jobs:
       - name: Terraform Init
         run: |
           terraform init \
-            -backend-config="storage_account_name=satwtfstate${{ vars.ENVIRONMENT_GROUP }}${{ vars.REGION_SUFFIX }}01" \
+            -backend-config="storage_account_name=samttfstate${{ vars.ENVIRONMENT_GROUP }}${{ vars.REGION_SUFFIX }}01" \
             -backend-config="container_name=terraform-state" \
             -backend-config="key=${{ inputs.terraform_state_filename }}" \
             -backend-config="access_key=${TF_STORAGE_ACCOUNT_KEY}"
@@ -183,7 +183,7 @@ jobs:
       - name: Get Terraform Storage Account Key
         run: |
           RESOURCE_GROUP="rg-deploymentinfra-mitchtest-${{ vars.ENVIRONMENT_GROUP }}-${{ vars.REGION_SUFFIX }}"
-          STORAGE_ACCOUNT_NAME="satwtfstate${{ vars.ENVIRONMENT_GROUP }}${{ vars.REGION_SUFFIX }}01"
+          STORAGE_ACCOUNT_NAME="samttfstate${{ vars.ENVIRONMENT_GROUP }}${{ vars.REGION_SUFFIX }}01"
           key=$(az storage account keys list \
             -g $RESOURCE_GROUP \
             -n $STORAGE_ACCOUNT_NAME \
@@ -201,7 +201,7 @@ jobs:
       - name: Terraform Init
         run: |
           terraform init \
-            -backend-config="storage_account_name=satwtfstate${{ vars.ENVIRONMENT_GROUP }}${{ vars.REGION_SUFFIX }}01" \
+            -backend-config="storage_account_name=samttfstate${{ vars.ENVIRONMENT_GROUP }}${{ vars.REGION_SUFFIX }}01" \
             -backend-config="container_name=terraform-state" \
             -backend-config="key=${{ inputs.terraform_state_filename }}" \
             -backend-config="access_key=${TF_STORAGE_ACCOUNT_KEY}"
