@@ -11,7 +11,7 @@ CUSTOM_DOMAINS=$@
 if [[ -z $CUSTOM_DOMAINS ]]; then
     echo "Parameters missing."
     echo "Usage: create-certificates.sh domain1 domain2 ..."
-    echo "Example: create-certificates.sh api.justice.govt.nz portal.api.justice.govt.nz"
+    echo "Example: create-certificates.sh api.mitchtest.nz portal.api.mitchtest.nz"
     exit 1
 fi
 

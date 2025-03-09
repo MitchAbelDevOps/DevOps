@@ -4,7 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: "The target environment for deployment (e.g., dev, test, prod)"
+        description: "The target environment for deployment that is lowest of the group (e.g., dev, stg, prd)"
+        required: true
+        type: string
+      environment_group:
+        description: "The target environment group for deployment (e.g., npe, ppe, prd)"
         required: true
         type: string
       root_directory:
@@ -16,11 +20,6 @@ on:
         description: "Sub-directory containing resource Terraform files"
         required: false
         default: "GitHubRunner/Infrastructure"
-        type: string
-      terraform_state_filename:
-        description: "Name for the tfstate blob to create for this resource"
-        required: false
-        default: "cae-mitchtest.tfstate"
         type: string
       runner:
         description: "Type of runner to use for deployment. Defaults to GitHub hosted Linux"
@@ -38,6 +37,6 @@ jobs:
       environment: "${{ inputs.environment }}"
       root_directory: ${{ inputs.root_directory }}
       sub_directory: ${{ inputs.sub_directory }}
-      terraform_state_filename: ${{  inputs.terraform_state_filename }}
+      terraform_state_filename: runnerinfra-mitchtest.${{ inputs.environment_group }}.tfstate
       runner: ${{  inputs.runner }}
     secrets: inherit
