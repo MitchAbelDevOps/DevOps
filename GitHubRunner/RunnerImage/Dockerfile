@@ -6,6 +6,7 @@ USER root
 RUN apt-get update && apt-get install -y \
     curl \
     jq \
+    zip \
     apt-transport-https \
     lsb-release \
     nodejs && \
@@ -15,6 +16,14 @@ RUN apt-get update && apt-get install -y \
     ln -s /usr/bin/nodejs /usr/local/bin/node && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# Install .NET SDK
+RUN apt-get update && apt-get install -y wget \
+    && wget https://dot.net/v1/dotnet-install.sh -O /usr/local/bin/dotnet-install.sh \
+    && chmod +x /usr/local/bin/dotnet-install.sh \
+    && /usr/local/bin/dotnet-install.sh --channel 8.0 --install-dir /usr/share/dotnet \
+    && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy over the start.sh script
 COPY start.sh start.sh
