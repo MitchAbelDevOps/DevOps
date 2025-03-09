@@ -47,7 +47,6 @@ jobs:
           echo "ARM_CLIENT_ID=${{ secrets.AZURE_CLIENT_ID }}" >> $GITHUB_ENV
 
       # Generate GitHub App Token
-      ## NOTE: Get's the secret/vars conditionally depending on environment as we have nonprod/prod versions
       - name: Generate GitHub App Token
         id: github_token
         uses: actions/create-github-app-token@v1
@@ -144,13 +143,12 @@ jobs:
           echo "ARM_CLIENT_ID=${{ secrets.AZURE_CLIENT_ID }}" >> $GITHUB_ENV
 
       # Generate GitHub App Token
-      ## NOTE: Get's the secret/vars conditionally depending on environment as we have nonprod/prod versions
       - name: Generate GitHub App Token
         id: github_token
         uses: actions/create-github-app-token@v1
         with:
-          app-id: ${{ vars[inputs.environment == 'prod' && 'SELF_HOSTED_RUNNER_PROD_APP_ID' || 'SELF_HOSTED_RUNNER_NONPROD_APP_ID'] }}
-          private-key: ${{ secrets[inputs.environment == 'prod' && 'SELF_HOSTED_RUNNER_PROD_APP_PRIVATE_KEY' || 'SELF_HOSTED_RUNNER_NONPROD_APP_PRIVATE_KEY'] }}
+          app-id: ${{ vars.SELF_HOSTED_RUNNER_APP_ID }}
+          private-key: ${{ secrets.SELF_HOSTED_RUNNER_APP_PRIVATE_KEY }}
           owner: MitchAbelDevOps
 
       # Configure Git to Use the Token
