@@ -93,7 +93,7 @@ for i in $(seq 1 $NUM_RUNNERS); do
                 --token "${reg_token}" \
                 --unattended \
                 --name "Runner-${INSTANCE}-$i" \
-                --labels self-hosted-"${ENV}"
+                --labels self-hosted-"${ENVIRONMENT_GROUP}"
 
     echo "Starting runner #$i"
     ./run.sh &  # Start the runner in the background
