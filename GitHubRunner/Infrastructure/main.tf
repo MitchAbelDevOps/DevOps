@@ -16,20 +16,20 @@ data "azurerm_subnet" "runners_subnet" {
 /**************************************************
 New Resources
 ***************************************************/
-// Log Analytics Workspace
-resource "azurerm_log_analytics_workspace" "log_analytics_workspace" {
-  name                = "log-${var.resourceSuffix}-deployment-${var.environmentGroup}-${var.locationSuffix}"
-  location            = var.location
-  resource_group_name = local.fullResourceGroupName
-  sku                 = "PerGB2018"
-  retention_in_days   = 30
+# // Log Analytics Workspace
+# resource "azurerm_log_analytics_workspace" "log_analytics_workspace" {
+#   name                = "log-${var.resourceSuffix}-deployment-${var.environmentGroup}-${var.locationSuffix}"
+#   location            = var.location
+#   resource_group_name = local.fullResourceGroupName
+#   sku                 = "PerGB2018"
+#   retention_in_days   = 30
 
-  tags = local.tags
+#   tags = local.tags
 
-  lifecycle {
-    prevent_destroy = false
-  }
-}
+#   lifecycle {
+#     prevent_destroy = false
+#   }
+# }
 
 // Azure Container Registry UAMI
 resource "azurerm_user_assigned_identity" "acr_pull" {
