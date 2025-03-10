@@ -115,7 +115,7 @@ jobs:
       - name: Upload Terraform Plan
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.run-name }}-terraform-plan
+          name: ${{ github.workflow }}-terraform-plan
           include-hidden-files: true
           path: |
             ${{ github.workspace }}/${{ inputs.root_directory }}/deployment.tfplan
@@ -192,7 +192,7 @@ jobs:
       - name: Download Terraform Plan Artifact
         uses: actions/download-artifact@v4
         with:
-          name: ${{ github.run-name }}-terraform-plan
+          name: ${{ github.workflow }}-terraform-plan
           path: ${{ inputs.root_directory }}
 
       # Terraform Init with Terraform State Storage Account details
