@@ -99,8 +99,8 @@ jobs:
 
       - name: Find runner subnet ID
         run: |
-          VNET_NAME="vnet-mitchtest-${ENVIRONMENT_GROUP}-${REGION_SUFFIX}-01"
-          RUNNER_SUBNET_NAME="snet-mitchtest-${ENVIRONMENT_GROUP}-runners-${REGION_SUFFIX}-01"
+          VNET_NAME="vnet-mitchtest-${ENVIRONMENT_GROUP}-${REGION_SUFFIX}"
+          RUNNER_SUBNET_NAME="snet-mitchtest-${ENVIRONMENT_GROUP}-runners-${REGION_SUFFIX}"
 
           RUNNER_SUBNET_ID=$(az network vnet subnet show --resource-group $NETWORK_RESOURCE_GROUP --vnet-name $VNET_NAME --name $RUNNER_SUBNET_NAME --query "id" --output tsv)
 
